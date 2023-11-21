@@ -1,0 +1,12 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = "Andrew's Selkouutiset Archive"
+
+[[menus.main]]
+name = 'Home'
+pageRef = '/'
+
+[module]
+  [module.hugoVersion]
+    extended = false
+    min = "0.116.0"

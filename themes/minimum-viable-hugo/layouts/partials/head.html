@@ -1,0 +1,20 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>
+  {{ if .IsHome }}
+    {{ site.Title }}
+  {{ else }}
+    {{ $urlParts := split .RelPermalink "/" }}
+    {{ if and (eq (len $urlParts) 5) (eq (len (index $urlParts 1)) 4) (eq (len (index $urlParts 2)) 2) (eq (len (index $urlParts 3)) 2) }}
+      {{ $year := index $urlParts 1 }}
+      {{ $month := index $urlParts 2 }}
+      {{ $day := index $urlParts 3 }}
+      {{ printf "%s/%s/%s | %s" $year $month $day site.Title }}
+    {{ else }}
+      {{ printf "%s | %s" .Title site.Title }}
+    {{ end }}
+  {{ end }}
+</title>
+{{ partialCached "head/css.html" . }}
+{{ partialCached "head/js.html" . }}
+
