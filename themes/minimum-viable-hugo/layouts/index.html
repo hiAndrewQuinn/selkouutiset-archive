@@ -6,7 +6,7 @@
 {{ $url := .RelPermalink }}
 {{ $urlParts := split $url "/" }}
 {{ if and (eq (len $urlParts) 5) (eq (len (index $urlParts 1)) 4) (eq (len (index $urlParts 2)) 2) (eq (len (index $urlParts 3)) 2) }}
-<p><a href="{{ $url }}">{{ $url }}</a></p>
+<p><a href="./{{ $url }}">{{ $url }}</a></p>
 {{ end }}
 {{ end }}
 <hr />
