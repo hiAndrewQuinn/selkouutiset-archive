@@ -41,10 +41,11 @@ jobs:
         run: sudo snap install dart-sass
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: Checkout Repo and Initialize First Submodule
-        run: git submodule update --init
+        run: |
+          git submodule update --init
+          rm content/*.fish
+          rm -rf content/.git/
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
