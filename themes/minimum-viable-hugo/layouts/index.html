@@ -1,10 +1,13 @@
-{{ define "main" }}
-  {{ range sort site.Pages "RelPermalink" "asc" }}
-    {{ $url := .RelPermalink }}
-    {{ $urlParts := split $url "/" }}
-    {{ if and (eq (len $urlParts) 5) (eq (len (index $urlParts 1)) 4) (eq (len (index $urlParts 2)) 2) (eq (len (index $urlParts 3)) 2) }}
-      <p><a href="{{ $url }}">{{ $url }}</a></p>
-    {{ end }}
-  {{ end }}
+<h1>{{ .Title }}</h1>
+<p>A running archive of the daily news articles at <a href="https://yle.fi/selkouutiset">YLE Selkouutiset</a>.<p>
+<p>Updates with today's news around 6 PM UTC / 8 PM Finnish time daily. (<a href="https://time.is/UTC">What time UTC is it now?</a>)</p>
+<p>(Other useful Finnish things I've built: <a href="https://ankiweb.net/shared/info/1331009943">finfreq</a>, a flashcard deck of the most common 1000 words in Finnish; <a href="https://ankiweb.net/shared/info/1149950470">finfreq10k</a>, finfreq's much-improved version; and <a href="https://github.com/hiAndrewQuinn/finstem">finstem</a>, a small CLI tool that takes in Finnish words and spits out their dictionary lookup forms.)</p>
+{{ range sort site.Pages "RelPermalink" "asc" }}
+{{ $url := .RelPermalink }}
+{{ $urlParts := split $url "/" }}
+{{ if and (eq (len $urlParts) 5) (eq (len (index $urlParts 1)) 4) (eq (len (index $urlParts 2)) 2) (eq (len (index $urlParts 3)) 2) }}
+<p><a href="{{ $url }}">{{ $url }}</a></p>
 {{ end }}
-
+{{ end }}
+<hr />
+<p>(Interested in other, non-Finnish things I've built? Peep my <a href="https://github.com/hiAndrewQuinn">Github</a>, my <a href="https://www.linkedin.com/in/heiandrewquinn/">LinkedIn</a>, my <a href="https://andrew-quinn.me/">personal website</a>, my <a href="https://hiandrewquinn.github.io/til-site/">TIL site</a>... I build a lot of little tools!)</p>
