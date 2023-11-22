@@ -36,7 +36,7 @@ jobs:
       - name: Checkout Repo and Initialize First Submodule
         run: |
           sudo snap install hugo
-          git submodule update --init
+          git submodule update --init --depth=1
           rm content/*.fish
           rm -rf content/.git/
       - name: Build with Hugo
