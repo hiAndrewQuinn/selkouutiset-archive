@@ -3,14 +3,11 @@
 set this_directory /home/andrew/Code/selkouutiset-archive/
 pushd $this_directory
 
-# Pull the latest HEAD from selkouutiset-scrape.
-git submodule update --remote content/
-cd content/
-git pull origin HEAD
-cd $this_directory
+git submodule update --init
+git submodule update --remote --merge
 
 git add -A
-set timestamp (date -u)
+set timestamp (date --iso-8601=seconds)
 git commit -m "Latest data: $timestamp" || exit 0
 git push
 
