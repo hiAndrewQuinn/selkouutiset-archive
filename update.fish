@@ -3,6 +3,8 @@
 set this_directory /home/andrew/Code/selkouutiset-archive/
 pushd $this_directory
 
+git pull
+
 git submodule update --init
 git submodule update --remote --merge
 
