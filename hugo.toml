@@ -1,4 +1,4 @@
 baseURL = 'https://example.org/'
-languageCode = 'en-us'
 title = "Andrew's Selkouutiset Archive"
 theme = 'minimum-viable-hugo'
+defaultContentLanguage = "fi"  # Set the default language
