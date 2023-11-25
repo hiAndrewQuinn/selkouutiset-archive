@@ -39,9 +39,6 @@ jobs:
           git submodule update --init --depth=1
           rm content/*.fish
           rm -rf content/.git/
-
-          # Firebreak, until I figure out how the heck to get it to stop defaulting to English.
-          find . -type f -name '_index.en.md' -exec rm {} \;
       - name: Build with Hugo
         env:
           # For maximum backward compatibility with Hugo modules
