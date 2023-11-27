@@ -3,11 +3,25 @@ title = "Andrew's Selkouutiset Archive"
 theme = 'minimum-viable-hugo'
 
 DefaultContentLanguage = "fi"  
+
 [languages]
   [languages.fi]
-    languageName = "Suomi"
+    languageName = "Finnish"
     weight = 1
   [languages.en]
     languageName = "English"
     weight = 2
+  [languages.es]
+    languageName = "Spanish"
+    weight = 3
+  [languages.ru]
+    languageName = "Russian"
+    weight = 4
+  [languages.de]
+    languageName = "German"
+    weight = 5
+  [languages.ar]
+    languageName = "Arabic"
+    weight = 5
+
 
