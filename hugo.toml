@@ -7,20 +7,232 @@ DefaultContentLanguage = "fi"
   [languages.fi]
     languageName = "Finnish"
     weight = 1
-  [languages.en]
-    languageName = "English"
-    weight = 2
-  [languages.es]
-    languageName = "Spanish"
-    weight = 3
-  [languages.ru]
-    languageName = "Russian"
-    weight = 4
-  [languages.de]
-    languageName = "German"
-    weight = 5
+
+  [languages.af]
+    languageName = "Afrikaans"
+    weight = 47
   [languages.ar]
     languageName = "Arabic"
     weight = 5
-
-
+  [languages.az]
+    languageName = "Azerbaijani"
+    weight = 48
+  [languages.be]
+    languageName = "Belarusian"
+    weight = 49
+  [languages.bg]
+    languageName = "Bulgarian"
+    weight = 28
+  [languages.bs]
+    languageName = "Bosnian"
+    weight = 50
+  [languages.ca]
+    languageName = "Catalan"
+    weight = 51
+  [languages.cs]
+    languageName = "Czech"
+    weight = 52
+  [languages.cy]
+    languageName = "Welsh"
+    weight = 53
+  [languages.da]
+    languageName = "Danish"
+    weight = 54
+  [languages.de]
+    languageName = "German"
+    weight = 17
+  [languages.dv]
+    languageName = "Divehi"
+    weight = 55
+  [languages.el]
+    languageName = "Greek"
+    weight = 36
+  [languages.en]
+    languageName = "English"
+    weight = 6
+  [languages.eo]
+    languageName = "Esperanto"
+    weight = 56
+  [languages.es]
+    languageName = "Spanish"
+    weight = 15
+  [languages.et]
+    languageName = "Estonian"
+    weight = 4
+  [languages.eu]
+    languageName = "Basque"
+    weight = 57
+  [languages.fa]
+    languageName = "Persian"
+    weight = 8
+  [languages.fr]
+    languageName = "French"
+    weight = 21
+  [languages.gl]
+    languageName = "Galician"
+    weight = 58
+  [languages.gu]
+    languageName = "Gujarati"
+    weight = 59
+  [languages.he]
+    languageName = "Hebrew"
+    weight = 60
+  [languages.hi]
+    languageName = "Hindi"
+    weight = 29
+  [languages.hr]
+    languageName = "Croatian"
+    weight = 61
+  [languages.hu]
+    languageName = "Hungarian"
+    weight = 30
+  [languages.hy]
+    languageName = "Armenian"
+    weight = 62
+  [languages.id]
+    languageName = "Indonesian"
+    weight = 63
+  [languages.is]
+    languageName = "Icelandic"
+    weight = 64
+  [languages.it]
+    languageName = "Italian"
+    weight = 27
+  [languages.ja]
+    languageName = "Japanese"
+    weight = 39
+  [languages.ka]
+    languageName = "Georgian"
+    weight = 65
+  [languages.kk]
+    languageName = "Kazakh"
+    weight = 66
+  [languages.kn]
+    languageName = "Kannada"
+    weight = 67
+  [languages.ko]
+    languageName = "Korean"
+    weight = 68
+  [languages.kok]
+    languageName = "Konkani"
+    weight = 69
+  [languages.ky]
+    languageName = "Kyrgyz"
+    weight = 70
+  [languages.lt]
+    languageName = "Lithuanian"
+    weight = 38
+  [languages.lv]
+    languageName = "Latvian"
+    weight = 31
+  [languages.mi]
+    languageName = "Maori"
+    weight = 71
+  [languages.mk]
+    languageName = "Macedonian"
+    weight = 72
+  [languages.mn]
+    languageName = "Mongolian"
+    weight = 73
+  [languages.mr]
+    languageName = "Marathi"
+    weight = 74
+  [languages.ms]
+    languageName = "Malay"
+    weight = 75
+  [languages.mt]
+    languageName = "Maltese"
+    weight = 76
+  [languages.nb]
+    languageName = "Norwegian Bokmål"
+    weight = 77
+  [languages.nl]
+    languageName = "Dutch"
+    weight = 34
+  [languages.pa]
+    languageName = "Punjabi"
+    weight = 45
+  [languages.pl]
+    languageName = "Polish"
+    weight = 19
+  [languages.ps]
+    languageName = "Pashto"
+    weight = 41
+  [languages.pt]
+    languageName = "Portuguese"
+    weight = 26
+  [languages.qu]
+    languageName = "Quechua"
+    weight = 78
+  [languages.ro]
+    languageName = "Romanian"
+    weight = 18
+  [languages.ru]
+    languageName = "Russian"
+    weight = 3
+  [languages.sa]
+    languageName = "Sanskrit"
+    weight = 79
+  [languages.sk]
+    languageName = "Slovak"
+    weight = 80
+  [languages.sl]
+    languageName = "Slovenian"
+    weight = 81
+  [languages.sq]
+    languageName = "Albanian"
+    weight = 11
+  [languages.sr]
+    languageName = "Serbian"
+    weight = 24
+  [languages.sv]
+    languageName = "Swedish"
+    weight = 2
+  [languages.sw]
+    languageName = "Swahili"
+    weight = 32
+  [languages.syr]
+    languageName = "Syriac"
+    weight = 82
+  [languages.ta]
+    languageName = "Tamil"
+    weight = 33
+  [languages.te]
+    languageName = "Telugu"
+    weight = 44
+  [languages.th]
+    languageName = "Thai"
+    weight = 13
+  [languages.tl]
+    languageName = "Tagalog"
+    weight = 20
+  [languages.tr]
+    languageName = "Turkish"
+    weight = 14
+  [languages.ts]
+    languageName = "Tsonga"
+    weight = 83
+  [languages.tt]
+    languageName = "Tatar"
+    weight = 84
+  [languages.uk]
+    languageName = "Ukrainian"
+    weight = 16
+  [languages.ur]
+    languageName = "Urdu"
+    weight = 25
+  [languages.uz]
+    languageName = "Uzbek"
+    weight = 43
+  [languages.vi]
+    languageName = "Vietnamese"
+    weight = 12
+  [languages.xh]
+    languageName = "Xhosa"
+    weight = 85
+  [languages.zh]
+    languageName = "Chinese"
+    weight = 10
+  [languages.zu]
+    languageName = "Zulu"
+    weight = 86
