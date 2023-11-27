@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://hiandrewquinn.github.io/selkouutiset-archive/'
 title = "Andrew's Selkouutiset Archive"
 theme = 'minimum-viable-hugo'
 
