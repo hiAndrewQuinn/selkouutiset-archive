@@ -1,26 +1,36 @@
 title = "Andrew's Selkouutiset Archive"
 theme = 'minimum-viable-hugo'
 
-DefaultContentLanguage = "fi"  
+DefaultContentLanguage = "fi"
 
 [languages]
   [languages.fi]
     languageName = "Finnish"
     weight = 1
+    baseURL = "https://hiandrewquinn.github.io/selkouutiset-archive/"
+
   [languages.en]
     languageName = "English"
     weight = 2
+    baseURL = "https://hiandrewquinn.github.io/selkouutiset-archive/en/"
+
   [languages.es]
     languageName = "Spanish"
     weight = 3
+    baseURL = "https://hiandrewquinn.github.io/selkouutiset-archive/es/"
+
   [languages.ru]
     languageName = "Russian"
     weight = 4
+    baseURL = "https://hiandrewquinn.github.io/selkouutiset-archive/ru/"
+
   [languages.de]
     languageName = "German"
     weight = 5
+    baseURL = "https://hiandrewquinn.github.io/selkouutiset-archive/de/"
+
   [languages.ar]
     languageName = "Arabic"
-    weight = 5
-
+    weight = 6
+    baseURL = "https://hiandrewquinn.github.io/selkouutiset-archive/ar/"
 
