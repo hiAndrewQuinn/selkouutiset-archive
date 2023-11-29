@@ -1,8 +1,9 @@
 <h1>{{ site.Title }}</h1>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/andrewh0/okcss@1/dist/ok.min.css" />
 {{ if .IsTranslated }}
-<select onchange="if (this.value) window.location.href=this.value;">
-  <option value="">Translations:</option>
+<label for="language-select">Translations:</label>
+<select name="languages" id="language-select" onchange="if (this.value) window.location.href=this.value;">
+  <option value="">--olet mahtava!--</option>
   {{ range .Translations }}
   <option value="/selkouutiset-archive{{ .RelPermalink }}">{{ .Language.LanguageName }}</option>
   {{ end }}
