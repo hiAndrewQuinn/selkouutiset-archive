@@ -11,6 +11,8 @@ git submodule update --remote --merge
 git add -A
 set timestamp (date --iso-8601=seconds)
 git commit -m "Latest data: $timestamp" || exit 0
+
+echo "Pushing..."
 git push
 
 popd
