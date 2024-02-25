@@ -22,3 +22,6 @@ pushd selkouutiset-archive/
 git submodule update --init --remote
 hugo server
 popd
+```
+
+That's all you need! Go to `http://localhost:1313` to see your website.
