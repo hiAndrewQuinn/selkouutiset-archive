@@ -1,22 +1,37 @@
+/* Theme Name: Selko Archive
+ *
+ * This is a classless CSS stylesheet for Andrew's Selkouutiset Archive. It is very minimal, by design.
+ */
+
+/* We default to PURE BLACK background, with light grey everything else. */
+html {
+  background-color: #000;
+  color: #bbb;
+}
+
+/* The body is as wide as the viewport, or 50em, whichever is smaller. */
 body {
-  color: #222;
-  font-family: sans-serif;
-  line-height: 1.5;
-  margin: 1rem;
-  max-width: 768px;
+  margin: 0 auto;
+  max-width: 50em;
+  padding: 0 1em;
+}
+
+/* Images should be as wide as the body is allowed to be, but no wider. */
+img {
+  max-width: 100%;
+  height: auto;
+  /* Even the images are dimmer. */
+}
+
+header,footer {
+  margin-bottom: 1em;
+  margin-top: 1em;
 }
 
 header {
-  border-bottom: 1px solid #222;
-  margin-bottom: 1rem;
+  border-bottom: 1px solid #888;
 }
 
 footer {
-  border-top: 1px solid #222;
-  margin-top: 1rem;
-}
-
-a {
-  color: #00e;
-  text-decoration: none;
+  border-top: 1px solid #888;
 }
