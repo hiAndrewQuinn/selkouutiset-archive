@@ -1,3 +1,14 @@
 baseURL = 'https://example.org/'
-languageCode = 'en-us'
-title = 'My New Hugo Site'
+languageCode = 'fi'
+title = "Andrew's Selkouutiset Archive"
+theme = 'selkoarchive'
+
+DefaultContentLanguage = "fi"
+
+[languages]
+  [languages.fi]
+    title = "Andrew's Selkouutiset Archive"
+    weight = 1
+  [languages.en]
+    title = "Andrew's Selkouutiset Archive"
+    weight = 2

@@ -1,0 +1,11 @@
+{{ define "main" }}
+  <aside>
+  Languages:
+  {{ range .AllTranslations }}
+    {{ $langName := or .Language.LanguageName .Language.Lang }}
+    {{ $langCode := or .Language.LanguageCode .Language.Lang }}
+    <a href="{{ .RelPermalink }}" hreflang="{{ $langCode }}">[{{ $langName }}]</a>
+  {{ end }}
+  </aside>
+  {{ .Content }}
+{{ end }}

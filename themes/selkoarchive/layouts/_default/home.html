@@ -1,0 +1,8 @@
+{{ define "main" }}
+  {{ .Content }}
+  {{ range site.RegularPages }}
+    {{ if .IsTranslated }}
+      <h3><a href="{{ .RelPermalink }}">{{ .RelPermalink }}</a></h3>
+    {{ end }}
+  {{ end }}
+{{ end }}
