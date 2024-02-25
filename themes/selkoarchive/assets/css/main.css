@@ -3,12 +3,6 @@
  * This is a classless CSS stylesheet for Andrew's Selkouutiset Archive. It is very minimal, by design.
  */
 
-/* We default to PURE BLACK background, with light grey everything else. */
-html {
-  background-color: #000;
-  color: #bbb;
-}
-
 /* The body is as wide as the viewport, or 50em, whichever is smaller. */
 body {
   margin: 0 auto;
