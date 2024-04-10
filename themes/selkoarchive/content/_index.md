@@ -15,3 +15,5 @@ Researchers who want a clean source of data for historical records are also
 welcome to trawl the depths, and may find the [unedited web scrape repo](https://github.com/hiAndrewQuinn/selkouutiset-scrape) of use.
 
 Searching for a specific article? Try searching the [Markdown files](https://github.com/search?q=repo%3AhiAndrewQuinn%2Fselkouutiset-scrape-cleaned+esimerkiksi&type=code) which power this site.
+
+**For learners:** Want to generate flashcards of this material? Take a look at [selkokortti](https://github.com/Selkouutiset-Archive/selkokortti). Contributions welcome!
