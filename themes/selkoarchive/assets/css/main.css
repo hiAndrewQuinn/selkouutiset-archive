@@ -187,32 +187,40 @@ tbody td:hover {
 @media screen and (max-width: 767px) {
   /* Reduce base font size slightly to fit more text */
   :root {
-    --base-font-size: 17px;
+    --base-font-size: 14px;
+    --h1-font-size: 1.5em;
+    --h2-font-size: 1.25em;
+    --h3-font-size: 1.125em;
+    hyphens: auto;
+
+    /* Fallbacks for older browsers if needed */
+    -webkit-hyphens: auto; /* Safari */
+    -ms-hyphens: auto;     /* Internet Explorer */
   }
 
   /* Reduce overall page margin */
   html {
-    margin: 0.5em 0;
+    margin: 0.25em 0;
   }
 
   /* Reduce margins on headers and footers */
   header, footer {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    padding-top: 0.25em;
-    padding-bottom: 0.25em;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    padding-top: 0.125em;
+    padding-bottom: 0.125em;
   }
   
   /* Tighter line-height for body text is the biggest factor */
   p, ul, ol, li {
-    line-height: 1.4;
+    line-height: 1.2;
   }
 
   /* Tighter line-height and margins for headings */
-  h1, h2, h3 { line-height: 1.15; }
-  h1 { margin: 0.4em 0; }
-  h2 { margin: 0.5em 0 0.3em; }
-  h3 { margin: 0.4em 0 0.2em; }
+  h1, h2, h3 { line-height: 1.05; }
+  h1 { margin: 0.5em 0; }
+  h2 { margin: 0.3em 0 0.3em; }
+  h3 { margin: 0.2em 0 0.2em; }
 
   /* Reduce space around other elements */
   img, blockquote, code, pre {

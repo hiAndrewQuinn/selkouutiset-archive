@@ -7,5 +7,7 @@
     <a href="{{ .RelPermalink }}" hreflang="{{ $langCode }}">[{{ $langName }}]</a>
   {{ end }}
   </aside>
-  {{ .Content }}
+  <article class="prose">
+    {{ .Content }}
+  </article>
 {{ end }}
