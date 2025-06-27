@@ -1,31 +1,185 @@
-/* Theme Name: Selko Archive
- *
- * This is a classless CSS stylesheet for Andrew's Selkouutiset Archive. It is very minimal, by design.
+/*
+ * Theme Name: Selko Archive (Fused)
+ * Description: A classless CSS stylesheet for the Selkouutiset Archive,
+ * merging a minimal layout with a more advanced base theme.
  */
 
-/* The body is as wide as the viewport, or 50em, whichever is smaller. */
+/* --- Root Variables & Color Palette --- */
+:root {
+  /* Color Palette */
+  --copper: #a8763eff;
+  --cosmic-latte: #f7f3e3ff;
+  --antiflash-white: #ecf0f1ff;
+  --specsavers-green: #0a6640ff;
+  --barn-red: #6f1a07ff;
+  --bistre: #2b2118ff;
+
+  /* Base sizes for mobile */
+  --base-font-size: 18px;
+  --h1-font-size: 2em;
+  --h2-font-size: 1.5em;
+  --h3-font-size: 1.2em;
+  --code-font-size: 0.9em;
+  --body-margin: 0;
+  --body-padding: 0 1em;
+  --max-width: 100%;
+}
+
+/* --- Media query for larger screens --- */
+@media screen and (min-width: 768px) {
+  :root {
+    --base-font-size: 18px;
+    --h1-font-size: 2.2em;
+    --h2-font-size: 1.6em;
+    --h3-font-size: 1.3em;
+    --code-font-size: 1em;
+    --body-margin: 0 auto;
+    --max-width: 50em; /* Key rule from the original Selko Archive CSS */
+  }
+}
+
+/* --- General Page Structure --- */
+html {
+  background-color: var(--cosmic-latte);
+  color: var(--bistre);
+  font-family: 'Lexend Deca', sans-serif;
+  margin: 1em 0;
+  font-size: var(--base-font-size);
+}
+
 body {
-  margin: 0 auto;
-  max-width: 50em;
-  padding: 0 1em;
+  margin: var(--body-margin);
+  max-width: var(--max-width);
+  padding: var(--body-padding);
 }
 
-/* Images should be as wide as the body is allowed to be, but no wider. */
-img {
-  max-width: 100%;
-  height: auto;
-  /* Even the images are dimmer. */
-}
-
-header,footer {
-  margin-bottom: 1em;
+/* --- Header & Footer --- */
+header, footer {
   margin-top: 1em;
+  margin-bottom: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 header {
-  border-bottom: 1px solid #888;
+  border-bottom: 1px solid var(--bistre);
 }
 
 footer {
-  border-top: 1px solid #888;
+  border-top: 1px solid var(--bistre);
 }
+
+/* --- Typography --- */
+h1, h2, h3 {
+  font-family: "Atkinson Hyperlegible", sans-serif;
+  line-height: 1.2;
+}
+
+h1 {
+  color: var(--barn-red);
+  font-size: var(--h1-font-size);
+  font-weight: 700;
+  margin: 0.5em 0 0.5em;
+}
+
+h2 {
+  color: var(--copper);
+  font-size: var(--h2-font-size);
+  font-weight: 700;
+  margin: 0.8em 0 0.4em;
+}
+
+h3 {
+  color: var(--bistre);
+  font-size: var(--h3-font-size);
+  margin: 0.6em 0 0.3em;
+}
+
+p, ul, ol, li {
+  line-height: 1.6;
+}
+
+a {
+  color: var(--copper);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  font-weight: bold;
+}
+
+a:hover, a:focus {
+  background-color: #fff2a8; /* A lighter yellow for hover */
+  color: var(--bistre);
+}
+
+/* --- Content Elements --- */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5em;
+  border: 0.1em solid var(--bistre);
+  display: block;
+  margin: 1em 0;
+}
+
+blockquote {
+  font-style: italic;
+  border-left: 0.25em solid var(--copper);
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  font-size: 95%;
+  background-color: var(--antiflash-white);
+}
+
+/* --- Code Blocks --- */
+code, pre {
+  margin: 1em 0;
+  font-family: 'Fira Code', monospace;
+  background-color: var(--antiflash-white);
+  color: var(--specsavers-green);
+  font-size: var(--code-font-size);
+  overflow-x: auto;
+  padding: 0.5em;
+  border-radius: 0.3em;
+}
+
+/* Inline code styling */
+p > code, li > code {
+  padding: 0.1em 0.3em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* --- Tables --- */
+table {
+  margin: 1.5em auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  color: var(--barn-red);
+  font-size: 0.95em;
+  border-bottom: 2px solid var(--bistre);
+}
+
+tbody {
+  font-size: 0.9em;
+}
+
+th, td {
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: var(--antiflash-white);
+}
+
+tbody tr:hover {
+  background-color: #fff2a8; /* Lighter yellow for hover */
+}
+
+tbody td:hover {
+  color: var(--specsavers-green);
+}
+
