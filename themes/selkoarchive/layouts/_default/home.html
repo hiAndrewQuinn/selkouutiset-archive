@@ -1,8 +1,16 @@
 {{ define "main" }}
   {{ .Content }}
-  {{ range site.RegularPages }}
-    {{ if .IsTranslated }}
+
+  {{ $pages := where site.RegularPages.Reverse "IsTranslated" true }}
+
+  {{ range $index, $page := $pages }}
+    {{ if eq $index 0 }}
+      <h1 class="latest-entry"><a href="{{ $page.RelPermalink }}">{{ $page.RelPermalink }} (latest)</a></h1>
+    {{ else if eq $index 1 }}
+      <h2><a href="{{ $page.RelPermalink }}">{{ $page.RelPermalink }}</a></h2>
+    {{ else }}
       <h3><a href="{{ .RelPermalink }}">{{ .RelPermalink }}</a></h3>
     {{ end }}
   {{ end }}
+
 {{ end }}
