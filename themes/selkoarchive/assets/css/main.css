@@ -183,3 +183,53 @@ tbody td:hover {
   color: var(--specsavers-green);
 }
 
+/* --- Mobile Compacting Rules --- */
+@media screen and (max-width: 767px) {
+  /* Reduce base font size slightly to fit more text */
+  :root {
+    --base-font-size: 17px;
+  }
+
+  /* Reduce overall page margin */
+  html {
+    margin: 0.5em 0;
+  }
+
+  /* Reduce margins on headers and footers */
+  header, footer {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+  }
+  
+  /* Tighter line-height for body text is the biggest factor */
+  p, ul, ol, li {
+    line-height: 1.4;
+  }
+
+  /* Tighter line-height and margins for headings */
+  h1, h2, h3 { line-height: 1.15; }
+  h1 { margin: 0.4em 0; }
+  h2 { margin: 0.5em 0 0.3em; }
+  h3 { margin: 0.4em 0 0.2em; }
+
+  /* Reduce space around other elements */
+  img, blockquote, code, pre {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+  }
+  
+  blockquote {
+    padding: 0.25em 0.75em;
+  }
+
+  table {
+    margin: 1em auto;
+  }
+
+  th, td {
+    padding: 0.4em 0.5em;
+  }
+}
+
