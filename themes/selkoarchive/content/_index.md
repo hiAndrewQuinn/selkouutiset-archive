@@ -4,17 +4,6 @@ date = 2023-01-01T08:00:00-07:00
 draft = false
 +++
 
-# ⚠️: Server is being migrated.
-
-We are still faithfully taking down data, but the server is being migrated and so this
-page may not update for some time. We will remove this once we start getting the latest 
-and greatest archival pages back up for you!
-Welcome to **Andrew's Selkouutiset Archive**. Here you will find a (mostly) clean
-and organized collection of YLE.Fi's daily Clear Finnish news articles, together
-with English translations via Google Translate.
-
----
-
 ## Find this useful? [Leave us a ⭐ on GitHub!](https://github.com/hiAndrewQuinn/selkouutiset-archive)
 
 This is a service I'm proud to provide the Finnish language learning community.
