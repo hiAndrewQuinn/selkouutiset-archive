@@ -25,3 +25,18 @@ popd
 ```
 
 That's all you need! Go to `http://localhost:1313` to see your website.
+
+## Features
+
+### 🎴 Anki Flashcard Generation
+
+The archive now includes built-in Anki flashcard generation! Create bilingual flashcards directly from any article to enhance your Finnish language learning.
+
+**Three granularity levels:**
+- **[sentence]** - One flashcard per sentence (best for beginners)
+- **[paragraph]** - One flashcard per paragraph (best for intermediate learners)
+- **[section]** - One flashcard per section (best for advanced learners)
+
+Simply click on any of these links when viewing an article, and a downloadable text file will be generated that you can import into Anki.
+
+📖 **[Read the complete Anki usage guide](ANKI_USAGE.md)** for detailed instructions on how to use this feature.
