@@ -189,13 +189,16 @@ class AnkiGenerator {
     const currentParagraphs = this.splitIntoParagraphs(currentArticle);
     const translationParagraphs = this.splitIntoParagraphs(translationArticle);
 
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('🎴 ANKI SENTENCE CARD GENERATION - DETAILED LOG');
+    console.log('═══════════════════════════════════════════════════════════');
     console.log(`Found ${currentParagraphs.length} paragraphs in ${this.currentLang}, ${translationParagraphs.length} in ${this.otherLang}`);
 
     // Warn if paragraph counts are very different
     const paragraphRatio = Math.max(currentParagraphs.length, translationParagraphs.length) /
                           Math.min(currentParagraphs.length, translationParagraphs.length);
     if (paragraphRatio > 1.5) {
-      console.warn(`Warning: Paragraph count mismatch. This may indicate parsing issues or different article structures.`);
+      console.warn(`⚠️  WARNING: Paragraph count mismatch. This may indicate parsing issues or different article structures.`);
     }
 
     const cards = [];
@@ -208,13 +211,17 @@ class AnkiGenerator {
       const currentSentences = this.splitIntoSentences(currentParagraphs[i]);
       const translationSentences = this.splitIntoSentences(translationParagraphs[i]);
 
-      console.log(`Paragraph ${i + 1}: ${currentSentences.length} sentences in ${this.currentLang}, ${translationSentences.length} in ${this.otherLang}`);
+      console.log(`\n--- Paragraph ${i + 1} ---`);
+      console.log(`${this.currentLang} sentences (${currentSentences.length}):`);
+      currentSentences.forEach((s, idx) => console.log(`  [${idx + 1}] ${s.substring(0, 100)}${s.length > 100 ? '...' : ''}`));
+      console.log(`${this.otherLang} sentences (${translationSentences.length}):`);
+      translationSentences.forEach((s, idx) => console.log(`  [${idx + 1}] ${s.substring(0, 100)}${s.length > 100 ? '...' : ''}`));
 
       // Skip paragraphs with severe sentence count mismatches (likely parsing errors)
       const sentenceRatio = Math.max(currentSentences.length, translationSentences.length) /
                            Math.max(Math.min(currentSentences.length, translationSentences.length), 1);
       if (sentenceRatio > 2.5 && Math.abs(currentSentences.length - translationSentences.length) > 2) {
-        console.warn(`Skipping paragraph ${i + 1} due to severe sentence count mismatch (${currentSentences.length} vs ${translationSentences.length})`);
+        console.warn(`⚠️  SKIPPING paragraph ${i + 1} due to severe sentence count mismatch (${currentSentences.length} vs ${translationSentences.length})`);
         skippedParagraphs++;
         continue;
       }
@@ -222,19 +229,35 @@ class AnkiGenerator {
       // Pair sentences - use the minimum count to avoid misalignment
       const maxSentences = Math.min(currentSentences.length, translationSentences.length);
 
+      console.log(`\nPairing sentences (using ${maxSentences} pairs):`);
       for (let j = 0; j < maxSentences; j++) {
-        const front = this.currentLang === 'fi' ? currentSentences[j] : translationSentences[j];
-        const back = this.currentLang === 'fi' ? translationSentences[j] : currentSentences[j];
+        const fiSentence = this.currentLang === 'fi' ? currentSentences[j] : translationSentences[j];
+        const enSentence = this.currentLang === 'fi' ? translationSentences[j] : currentSentences[j];
 
-        if (front && back) {
-          cards.push({ front, back });
+        if (fiSentence && enSentence) {
+          console.log(`  Card ${cards.length + 1}:`);
+          console.log(`    FI: ${fiSentence.substring(0, 80)}${fiSentence.length > 80 ? '...' : ''}`);
+          console.log(`    EN: ${enSentence.substring(0, 80)}${enSentence.length > 80 ? '...' : ''}`);
+          cards.push({ front: fiSentence, back: enSentence });
         }
+      }
+
+      // Warn about unpaired sentences
+      if (currentSentences.length !== translationSentences.length) {
+        const diff = Math.abs(currentSentences.length - translationSentences.length);
+        console.warn(`⚠️  ${diff} sentence(s) not paired in paragraph ${i + 1}`);
       }
     }
 
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('📊 GENERATION SUMMARY');
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log(`✅ Total cards generated: ${cards.length}`);
+    console.log(`📝 Paragraphs processed: ${maxParagraphs}`);
     if (skippedParagraphs > 0) {
-      console.log(`Skipped ${skippedParagraphs} paragraphs due to alignment issues`);
+      console.log(`⚠️  Paragraphs skipped due to alignment issues: ${skippedParagraphs}`);
     }
+    console.log('═══════════════════════════════════════════════════════════\n');
 
     return cards;
   }
