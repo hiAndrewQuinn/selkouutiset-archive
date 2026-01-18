@@ -92,6 +92,99 @@ class AnkiGenerator {
   }
 
   /**
+   * Extract metadata from the current page
+   */
+  extractMetadata() {
+    const url = window.location.href;
+    const title = document.title || 'Selkouutiset Article';
+
+    // Try to extract date from URL (pattern: /YYYY/MM/DD/)
+    const dateMatch = url.match(/\/(\d{4})\/(\d{2})\/(\d{2})\//);
+    const date = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}` : null;
+
+    // Get article heading
+    const h1 = document.querySelector('article.prose h1');
+    const articleTitle = h1 ? h1.textContent.trim() : title;
+
+    return {
+      url,
+      title,
+      articleTitle,
+      date,
+      generatedDate: new Date().toISOString().split('T')[0]
+    };
+  }
+
+  /**
+   * Format card metadata as HTML footer
+   */
+  formatCardMetadata(metadata, context = {}) {
+    const parts = [];
+
+    parts.push('<div style="margin-top: 1.5em; padding-top: 1em; border-top: 1px solid #ccc; font-size: 0.75em; color: #666;">');
+
+    // Source line
+    parts.push('<div style="margin-bottom: 0.5em;">');
+    parts.push('<strong>Source:</strong> ');
+    parts.push(`<a href="${metadata.url}" style="color: #a8763e;">Andrew's Selkouutiset Archive</a>`);
+    parts.push('</div>');
+
+    // Article title
+    if (metadata.articleTitle) {
+      parts.push('<div style="margin-bottom: 0.5em;">');
+      parts.push('<strong>Article:</strong> ');
+      parts.push(this.escapeHtml(metadata.articleTitle));
+      parts.push('</div>');
+    }
+
+    // Date
+    if (metadata.date) {
+      parts.push('<div style="margin-bottom: 0.5em;">');
+      parts.push('<strong>Date:</strong> ');
+      parts.push(metadata.date);
+      parts.push('</div>');
+    }
+
+    // Context: Section, Paragraph, Sentence
+    if (context.section && context.sectionNumber) {
+      parts.push('<div style="margin-bottom: 0.5em;">');
+      parts.push('<strong>Section:</strong> ');
+      parts.push(this.escapeHtml(context.section));
+      if (context.sectionNumber) {
+        parts.push(` (#${context.sectionNumber})`);
+      }
+      parts.push('</div>');
+    } else if (context.paragraphNumber) {
+      parts.push('<div style="margin-bottom: 0.5em;">');
+      parts.push(`<strong>Location:</strong> Paragraph ${context.paragraphNumber}`);
+      if (context.sentenceNumber) {
+        parts.push(`, Sentence ${context.sentenceNumber}`);
+      }
+      parts.push('</div>');
+    }
+
+    // Footer with GitHub link
+    parts.push('<div style="margin-top: 0.5em; padding-top: 0.5em; border-top: 1px solid #eee; font-size: 0.9em;">');
+    parts.push('<a href="https://github.com/hiAndrewQuinn/selkouutiset-archive/issues" style="color: #a8763e;">Report an issue</a>');
+    parts.push(' | ');
+    parts.push(`Generated: ${metadata.generatedDate}`);
+    parts.push('</div>');
+
+    parts.push('</div>');
+
+    return parts.join('');
+  }
+
+  /**
+   * Escape HTML special characters
+   */
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
    * Split content into sentences
    */
   splitIntoSentences(text) {
@@ -307,7 +400,14 @@ class AnkiGenerator {
           console.log(`  Card ${cards.length + 1}:`);
           console.log(`    FI: ${fiSentence.substring(0, 80)}${fiSentence.length > 80 ? '...' : ''}`);
           console.log(`    EN: ${enSentence.substring(0, 80)}${enSentence.length > 80 ? '...' : ''}`);
-          cards.push({ front: fiSentence, back: enSentence });
+          cards.push({
+            front: fiSentence,
+            back: enSentence,
+            context: {
+              paragraphNumber: i + 1,
+              sentenceNumber: j + 1
+            }
+          });
         }
       }
 
@@ -356,7 +456,13 @@ class AnkiGenerator {
       const back = this.currentLang === 'fi' ? translationParagraphs[i] : currentParagraphs[i];
 
       if (front && back) {
-        cards.push({ front, back });
+        cards.push({
+          front,
+          back,
+          context: {
+            paragraphNumber: i + 1
+          }
+        });
       }
     }
 
@@ -384,7 +490,17 @@ class AnkiGenerator {
         const front = this.currentLang === 'fi' ? currentContent : translationContent;
         const back = this.currentLang === 'fi' ? translationContent : currentContent;
 
-        cards.push({ front, back });
+        // Use the section heading from the current language
+        const sectionHeading = currentSections[i].heading;
+
+        cards.push({
+          front,
+          back,
+          context: {
+            section: sectionHeading,
+            sectionNumber: i + 1
+          }
+        });
       }
     }
 
@@ -399,7 +515,7 @@ class AnkiGenerator {
 
     // Add metadata as comments
     lines.push('#separator:tab');
-    lines.push('#html:false');
+    lines.push('#html:true');  // Enable HTML for styled metadata
     lines.push('#tags column:3');
     if (metadata.title) {
       lines.push(`# Source: ${metadata.title}`);
@@ -409,10 +525,18 @@ class AnkiGenerator {
     }
     lines.push('');
 
-    // Add cards
+    // Extract page metadata once
+    const pageMetadata = this.extractMetadata();
+
+    // Add cards with metadata
     cards.forEach(card => {
       const front = card.front.replace(/\t/g, ' ').replace(/\n/g, '<br>');
-      const back = card.back.replace(/\t/g, ' ').replace(/\n/g, '<br>');
+      let back = card.back.replace(/\t/g, ' ').replace(/\n/g, '<br>');
+
+      // Append metadata to the back of each card
+      const cardMetadata = this.formatCardMetadata(pageMetadata, card.context || {});
+      back += cardMetadata;
+
       const tags = metadata.tags || 'selkouutiset';
 
       lines.push(`${front}\t${back}\t${tags}`);
