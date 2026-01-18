@@ -55,6 +55,43 @@ class AnkiGenerator {
   }
 
   /**
+   * Clean an element by removing non-content elements
+   */
+  cleanElement(element) {
+    // Clone the element to avoid modifying the original
+    const clone = element.cloneNode(true);
+
+    // Remove images and their containers
+    clone.querySelectorAll('img, picture, figure').forEach(el => el.remove());
+
+    // Remove SVG elements (icons, graphics)
+    clone.querySelectorAll('svg').forEach(el => el.remove());
+
+    // Remove audio/video players
+    clone.querySelectorAll('audio, video, iframe').forEach(el => el.remove());
+
+    // Remove buttons and interactive elements
+    clone.querySelectorAll('button').forEach(el => el.remove());
+
+    // Remove elements with common UI/metadata classes or data attributes
+    clone.querySelectorAll('[class*="player"], [class*="audio"], [class*="video"], [data-player], [data-audio]').forEach(el => el.remove());
+
+    // Remove links that only contain images (like image viewer triggers)
+    clone.querySelectorAll('a').forEach(link => {
+      const text = link.textContent.trim();
+      // Remove links that are very short or contain image-related keywords
+      if (text.length < 10 || /^(avaa|open|view|katselu|kuvi)/i.test(text)) {
+        const hasOnlyImage = link.querySelector('img') && text.replace(/\s/g, '').length < 20;
+        if (hasOnlyImage || /kuvi|image|view|katselu/i.test(text)) {
+          link.remove();
+        }
+      }
+    });
+
+    return clone;
+  }
+
+  /**
    * Split content into sentences
    */
   splitIntoSentences(text) {
@@ -64,7 +101,18 @@ class AnkiGenerator {
       .replace(/([.!?])\s+(?=[A-ZÄÖÅ])/g, '$1|')
       .split('|')
       .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .filter(s => {
+        // Filter out very short sentences (likely UI elements)
+        if (s.length < 15) return false;
+
+        // Filter out time codes (e.g., "3:02", "Listen 3:02")
+        if (/^\d+:\d+$/.test(s) || /^(kuuntele|listen|avaa|open)\s*\d+:\d+/i.test(s)) return false;
+
+        // Filter out image-related text
+        if (/^(avaa kuvi|open image|view)/i.test(s)) return false;
+
+        return true;
+      });
 
     return sentences;
   }
@@ -77,9 +125,18 @@ class AnkiGenerator {
     const pElements = element.querySelectorAll('p');
 
     pElements.forEach(p => {
-      const text = p.textContent.trim();
-      if (text.length > 0) {
-        paragraphs.push(text);
+      // Clean the paragraph by removing images, SVG, audio players, etc.
+      const cleaned = this.cleanElement(p);
+      const text = cleaned.textContent.trim();
+
+      // Only include paragraphs with substantial content
+      // Filter out very short paragraphs that are likely UI elements
+      if (text.length >= 20) {
+        // Additional check: must contain at least one sentence-ending punctuation
+        // or be a reasonable length (60+ chars)
+        if (text.length >= 60 || /[.!?]/.test(text)) {
+          paragraphs.push(text);
+        }
       }
     });
 
@@ -103,8 +160,12 @@ class AnkiGenerator {
         }
         currentSection = { heading: child.textContent.trim(), content: [] };
       } else if (child.tagName === 'P') {
-        const text = child.textContent.trim();
-        if (text.length > 0) {
+        // Clean the paragraph by removing images, SVG, audio players, etc.
+        const cleaned = this.cleanElement(child);
+        const text = cleaned.textContent.trim();
+
+        // Only include paragraphs with substantial content
+        if (text.length >= 20 && (text.length >= 60 || /[.!?]/.test(text))) {
           currentSection.content.push(text);
         }
       }
@@ -128,7 +189,17 @@ class AnkiGenerator {
     const currentParagraphs = this.splitIntoParagraphs(currentArticle);
     const translationParagraphs = this.splitIntoParagraphs(translationArticle);
 
+    console.log(`Found ${currentParagraphs.length} paragraphs in ${this.currentLang}, ${translationParagraphs.length} in ${this.otherLang}`);
+
+    // Warn if paragraph counts are very different
+    const paragraphRatio = Math.max(currentParagraphs.length, translationParagraphs.length) /
+                          Math.min(currentParagraphs.length, translationParagraphs.length);
+    if (paragraphRatio > 1.5) {
+      console.warn(`Warning: Paragraph count mismatch. This may indicate parsing issues or different article structures.`);
+    }
+
     const cards = [];
+    let skippedParagraphs = 0;
 
     // Process each paragraph pair
     const maxParagraphs = Math.min(currentParagraphs.length, translationParagraphs.length);
@@ -136,6 +207,17 @@ class AnkiGenerator {
     for (let i = 0; i < maxParagraphs; i++) {
       const currentSentences = this.splitIntoSentences(currentParagraphs[i]);
       const translationSentences = this.splitIntoSentences(translationParagraphs[i]);
+
+      console.log(`Paragraph ${i + 1}: ${currentSentences.length} sentences in ${this.currentLang}, ${translationSentences.length} in ${this.otherLang}`);
+
+      // Skip paragraphs with severe sentence count mismatches (likely parsing errors)
+      const sentenceRatio = Math.max(currentSentences.length, translationSentences.length) /
+                           Math.max(Math.min(currentSentences.length, translationSentences.length), 1);
+      if (sentenceRatio > 2.5 && Math.abs(currentSentences.length - translationSentences.length) > 2) {
+        console.warn(`Skipping paragraph ${i + 1} due to severe sentence count mismatch (${currentSentences.length} vs ${translationSentences.length})`);
+        skippedParagraphs++;
+        continue;
+      }
 
       // Pair sentences - use the minimum count to avoid misalignment
       const maxSentences = Math.min(currentSentences.length, translationSentences.length);
@@ -150,6 +232,10 @@ class AnkiGenerator {
       }
     }
 
+    if (skippedParagraphs > 0) {
+      console.log(`Skipped ${skippedParagraphs} paragraphs due to alignment issues`);
+    }
+
     return cards;
   }
 
@@ -162,6 +248,13 @@ class AnkiGenerator {
 
     const currentParagraphs = this.splitIntoParagraphs(currentArticle);
     const translationParagraphs = this.splitIntoParagraphs(translationArticle);
+
+    console.log(`Found ${currentParagraphs.length} paragraphs in ${this.currentLang}, ${translationParagraphs.length} in ${this.otherLang}`);
+
+    // Warn if paragraph counts are very different
+    if (currentParagraphs.length !== translationParagraphs.length) {
+      console.warn(`Warning: Paragraph count mismatch (${currentParagraphs.length} vs ${translationParagraphs.length}). Some content may be missing from cards.`);
+    }
 
     const cards = [];
     const maxParagraphs = Math.min(currentParagraphs.length, translationParagraphs.length);
@@ -305,7 +398,7 @@ class AnkiGenerator {
       this.hideLoadingIndicator(indicator);
 
       // Show success message
-      alert(`Generated ${cards.length} cards!\n\nTo import into Anki:\n1. Open Anki\n2. File → Import\n3. Select the downloaded file\n4. Set "Fields separated by: Tab"\n5. Set "Allow HTML in fields"\n6. Click Import`);
+      alert(`Generated ${cards.length} cards!\n\nTo import into Anki:\n1. Open Anki\n2. File → Import\n3. Select the downloaded file\n4. Set "Fields separated by: Tab"\n5. Set "Allow HTML in fields"\n6. Click Import\n\nNote: Check your browser console (F12) for detailed parsing information and any warnings about content alignment.`);
 
     } catch (error) {
       console.error('Error generating Anki cards:', error);
