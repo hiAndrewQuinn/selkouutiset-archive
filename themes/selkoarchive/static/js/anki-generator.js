@@ -102,17 +102,52 @@ class AnkiGenerator {
     const dateMatch = url.match(/\/(\d{4})\/(\d{2})\/(\d{2})\//);
     const date = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}` : null;
 
+    // Format date as Finnish style: "lauantai 17.1.2026"
+    let formattedDate = '';
+    if (dateMatch) {
+      const dateObj = new Date(dateMatch[1], parseInt(dateMatch[2]) - 1, dateMatch[3]);
+      const dayNames = ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'];
+      const dayName = dayNames[dateObj.getDay()];
+      formattedDate = `${dayName} ${parseInt(dateMatch[3])}.${parseInt(dateMatch[2])}.${dateMatch[1]}`;
+    }
+
+    // Build the GitHub Pages URL
+    const githubPagesUrl = dateMatch
+      ? `https://hiandrewquinn.github.io/selkouutiset-archive/${dateMatch[1]}/${dateMatch[2]}/${dateMatch[3]}/`
+      : url;
+
     // Get article heading
     const h1 = document.querySelector('article.prose h1');
     const articleTitle = h1 ? h1.textContent.trim() : title;
 
     return {
-      url,
+      url: githubPagesUrl,
+      localUrl: url,
       title,
       articleTitle,
       date,
+      formattedDate,
       generatedDate: new Date().toISOString().split('T')[0]
     };
+  }
+
+  /**
+   * Format card header with article info
+   */
+  formatCardHeader(metadata) {
+    const parts = [];
+
+    // Header: Radio | Viikon uutinen selkosuomeksi | lauantai 17.1.2026
+    parts.push('<div style="margin-bottom: 1em; padding-bottom: 0.5em; border-bottom: 2px solid #a8763e; font-size: 0.85em; color: #666;">');
+    parts.push('<strong>Radio</strong> | ');
+    parts.push('Viikon uutinen selkosuomeksi');
+    if (metadata.formattedDate) {
+      parts.push(' | ');
+      parts.push(metadata.formattedDate);
+    }
+    parts.push('</div>');
+
+    return parts.join('');
   }
 
   /**
@@ -137,14 +172,6 @@ class AnkiGenerator {
       parts.push('</div>');
     }
 
-    // Date
-    if (metadata.date) {
-      parts.push('<div style="margin-bottom: 0.5em;">');
-      parts.push('<strong>Date:</strong> ');
-      parts.push(metadata.date);
-      parts.push('</div>');
-    }
-
     // Context: Section, Paragraph, Sentence
     if (context.section && context.sectionNumber) {
       parts.push('<div style="margin-bottom: 0.5em;">');
@@ -165,7 +192,7 @@ class AnkiGenerator {
 
     // Footer with GitHub link
     parts.push('<div style="margin-top: 0.5em; padding-top: 0.5em; border-top: 1px solid #eee; font-size: 0.9em;">');
-    parts.push('<a href="https://github.com/hiAndrewQuinn/selkouutiset-archive/issues" style="color: #a8763e;">Report an issue</a>');
+    parts.push('<a href="https://github.com/hiAndrewQuinn/selkouutiset-archive/issues/new" style="color: #a8763e;">Report an issue</a>');
     parts.push(' | ');
     parts.push(`Generated: ${metadata.generatedDate}`);
     parts.push('</div>');
@@ -393,16 +420,16 @@ class AnkiGenerator {
 
       console.log(`\nPairing sentences (using ${maxSentences} pairs):`);
       for (let j = 0; j < maxSentences; j++) {
-        const fiSentence = this.currentLang === 'fi' ? currentSentences[j] : translationSentences[j];
-        const enSentence = this.currentLang === 'fi' ? translationSentences[j] : currentSentences[j];
+        const frontSentence = currentSentences[j];
+        const backSentence = translationSentences[j];
 
-        if (fiSentence && enSentence) {
+        if (frontSentence && backSentence) {
           console.log(`  Card ${cards.length + 1}:`);
-          console.log(`    FI: ${fiSentence.substring(0, 80)}${fiSentence.length > 80 ? '...' : ''}`);
-          console.log(`    EN: ${enSentence.substring(0, 80)}${enSentence.length > 80 ? '...' : ''}`);
+          console.log(`    ${this.currentLang.toUpperCase()}: ${frontSentence.substring(0, 80)}${frontSentence.length > 80 ? '...' : ''}`);
+          console.log(`    ${this.otherLang.toUpperCase()}: ${backSentence.substring(0, 80)}${backSentence.length > 80 ? '...' : ''}`);
           cards.push({
-            front: fiSentence,
-            back: enSentence,
+            front: frontSentence,
+            back: backSentence,
             context: {
               paragraphNumber: i + 1,
               sentenceNumber: j + 1
@@ -452,8 +479,8 @@ class AnkiGenerator {
     const maxParagraphs = Math.min(currentParagraphs.length, translationParagraphs.length);
 
     for (let i = 0; i < maxParagraphs; i++) {
-      const front = this.currentLang === 'fi' ? currentParagraphs[i] : translationParagraphs[i];
-      const back = this.currentLang === 'fi' ? translationParagraphs[i] : currentParagraphs[i];
+      const front = currentParagraphs[i];
+      const back = translationParagraphs[i];
 
       if (front && back) {
         cards.push({
@@ -487,8 +514,8 @@ class AnkiGenerator {
       const translationContent = translationSections[i].content.join('\n\n');
 
       if (currentContent && translationContent) {
-        const front = this.currentLang === 'fi' ? currentContent : translationContent;
-        const back = this.currentLang === 'fi' ? translationContent : currentContent;
+        const front = currentContent;
+        const back = translationContent;
 
         // Use the section heading from the current language
         const sectionHeading = currentSections[i].heading;
@@ -527,13 +554,36 @@ class AnkiGenerator {
 
     // Extract page metadata once
     const pageMetadata = this.extractMetadata();
+    const cardHeader = this.formatCardHeader(pageMetadata);
 
     // Add cards with metadata
     cards.forEach(card => {
       const front = card.front.replace(/\t/g, ' ').replace(/\n/g, '<br>');
-      let back = card.back.replace(/\t/g, ' ').replace(/\n/g, '<br>');
+      const backText = card.back.replace(/\t/g, ' ').replace(/\n/g, '<br>');
 
-      // Append metadata to the back of each card
+      // Build the back of the card with:
+      // 1. Header (Radio | Viikon uutinen | date)
+      // 2. Question in light red
+      // 3. Answer in blue
+      // 4. Footer with metadata
+      let back = '';
+
+      // Add header
+      back += cardHeader;
+
+      // Add the question (front) in light red
+      back += '<div style="margin-bottom: 1em; padding: 0.75em; background-color: #fff5f5; border-left: 3px solid #ff6b6b; color: #c92a2a;">';
+      back += '<strong>Question:</strong><br>';
+      back += front;
+      back += '</div>';
+
+      // Add the answer in blue
+      back += '<div style="margin-bottom: 1em; padding: 0.75em; background-color: #f0f7ff; border-left: 3px solid #4c6ef5; color: #1864ab;">';
+      back += '<strong>Answer:</strong><br>';
+      back += backText;
+      back += '</div>';
+
+      // Append metadata footer
       const cardMetadata = this.formatCardMetadata(pageMetadata, card.context || {});
       back += cardMetadata;
 
