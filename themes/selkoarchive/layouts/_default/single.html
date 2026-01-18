@@ -6,8 +6,14 @@
     {{ $langCode := or .Language.LanguageCode .Language.Lang }}
     <a href="{{ .RelPermalink }}" hreflang="{{ $langCode }}">[{{ $langName }}]</a>
   {{ end }}
+  <br>
+  Generate Anki Cards:
+  <a href="#" onclick="generateAnkiCards('sentence'); return false;" title="Generate flashcards for each sentence">[sentence]</a>
+  <a href="#" onclick="generateAnkiCards('paragraph'); return false;" title="Generate flashcards for each paragraph">[paragraph]</a>
+  <a href="#" onclick="generateAnkiCards('section'); return false;" title="Generate flashcards for each section">[section]</a>
   </aside>
   <article class="prose">
     {{ .Content }}
   </article>
+  <script src="{{ "js/anki-generator.js" | relURL }}"></script>
 {{ end }}
