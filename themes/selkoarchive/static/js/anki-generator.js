@@ -111,6 +111,21 @@ class AnkiGenerator {
         // Filter out image-related text
         if (/^(avaa kuvi|open image|view)/i.test(s)) return false;
 
+        // Filter out photo credits
+        if (/^(kuva|photo|image|copyright|©|photographer|valokuva|foto):/i.test(s)) return false;
+
+        // Filter out markdown image syntax ![alt](url)
+        if (/^!\[.*?\]\(.*?\)/.test(s)) return false;
+
+        // Filter out sentences that are mostly markdown images
+        if (s.includes('![') && s.includes('](')) return false;
+
+        // Filter out data URIs (base64 encoded images)
+        if (s.includes('data:image/') || s.includes('base64')) return false;
+
+        // Filter out sentences with image URLs
+        if (/\.(jpg|jpeg|png|gif|svg|webp)/i.test(s)) return false;
+
         return true;
       });
 
@@ -128,6 +143,35 @@ class AnkiGenerator {
       // Clean the paragraph by removing images, SVG, audio players, etc.
       const cleaned = this.cleanElement(p);
       const text = cleaned.textContent.trim();
+
+      // Filter out photo credits and captions
+      if (/^(kuva|photo|image|copyright|©|photographer|valokuva|foto):/i.test(text)) {
+        return; // Skip this paragraph
+      }
+
+      // Filter out markdown images
+      if (/^!\[.*?\]\(.*?\)/.test(text) || (text.includes('![') && text.includes(']('))) {
+        return; // Skip this paragraph
+      }
+
+      // Filter out data URIs and image URLs
+      if (text.includes('data:image/') || text.includes('base64') || /\.(jpg|jpeg|png|gif|svg|webp)/i.test(text)) {
+        return; // Skip this paragraph
+      }
+
+      // Skip paragraphs that look like image captions
+      // Pattern: Name. Photo: Credit
+      // Pattern: Short name followed by period
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+      if (sentences.length === 1 && text.length < 50) {
+        // Single short sentence - likely a caption or title
+        return;
+      }
+
+      // Check if it's a caption pattern (Name + Photo credit)
+      if (sentences.length === 2 && sentences[1].match(/^\s*(kuva|photo|image|foto|valokuva)/i)) {
+        return; // Skip caption paragraphs
+      }
 
       // Only include paragraphs with substantial content
       // Filter out very short paragraphs that are likely UI elements
@@ -163,6 +207,31 @@ class AnkiGenerator {
         // Clean the paragraph by removing images, SVG, audio players, etc.
         const cleaned = this.cleanElement(child);
         const text = cleaned.textContent.trim();
+
+        // Apply same filters as splitIntoParagraphs
+        // Filter out photo credits and captions
+        if (/^(kuva|photo|image|copyright|©|photographer|valokuva|foto):/i.test(text)) {
+          return;
+        }
+
+        // Filter out markdown images
+        if (/^!\[.*?\]\(.*?\)/.test(text) || (text.includes('![') && text.includes(']('))) {
+          return;
+        }
+
+        // Filter out data URIs and image URLs
+        if (text.includes('data:image/') || text.includes('base64') || /\.(jpg|jpeg|png|gif|svg|webp)/i.test(text)) {
+          return;
+        }
+
+        // Skip caption-like paragraphs
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+        if (sentences.length === 1 && text.length < 50) {
+          return;
+        }
+        if (sentences.length === 2 && sentences[1].match(/^\s*(kuva|photo|image|foto|valokuva)/i)) {
+          return;
+        }
 
         // Only include paragraphs with substantial content
         if (text.length >= 20 && (text.length >= 60 || /[.!?]/.test(text))) {
