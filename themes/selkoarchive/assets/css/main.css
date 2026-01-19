@@ -183,6 +183,19 @@ tbody td:hover {
   color: var(--specsavers-green);
 }
 
+/* --- Aside Styling (Language & Anki Links) --- */
+aside {
+  margin: 1em 0;
+  padding: 0.75em;
+  background-color: var(--antiflash-white);
+  border-left: 3px solid var(--copper);
+  font-size: 0.9em;
+}
+
+aside a {
+  margin-right: 0.5em;
+}
+
 /* --- Mobile Compacting Rules --- */
 @media screen and (max-width: 767px) {
   /* Reduce base font size slightly to fit more text */
