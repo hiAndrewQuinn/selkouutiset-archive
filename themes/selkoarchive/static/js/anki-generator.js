@@ -441,21 +441,40 @@ class AnkiGenerator {
     const currentParagraphs = this.splitIntoParagraphs(currentArticle);
     const translationParagraphs = this.splitIntoParagraphs(translationArticle);
 
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('🎴 ANKI PARAGRAPH CARD GENERATION - DETAILED LOG');
+    console.log('═══════════════════════════════════════════════════════════');
     console.log(`Found ${currentParagraphs.length} paragraphs in ${this.currentLang}, ${translationParagraphs.length} in ${this.otherLang}`);
 
     // Warn if paragraph counts are very different
-    if (currentParagraphs.length !== translationParagraphs.length) {
-      console.warn(`Warning: Paragraph count mismatch (${currentParagraphs.length} vs ${translationParagraphs.length}). Some content may be missing from cards.`);
+    const paragraphRatio = Math.max(currentParagraphs.length, translationParagraphs.length) /
+                          Math.max(Math.min(currentParagraphs.length, translationParagraphs.length), 1);
+    if (paragraphRatio > 1.5) {
+      console.warn(`⚠️  WARNING: Paragraph count mismatch ratio ${paragraphRatio.toFixed(2)}. This may indicate parsing issues or different article structures.`);
     }
 
     const cards = [];
     const maxParagraphs = Math.min(currentParagraphs.length, translationParagraphs.length);
+    let skippedParagraphs = 0;
+
+    console.log(`\n--- Processing ${maxParagraphs} paragraph pairs ---`);
 
     for (let i = 0; i < maxParagraphs; i++) {
       const front = this.currentLang === 'fi' ? currentParagraphs[i] : translationParagraphs[i];
       const back = this.currentLang === 'fi' ? translationParagraphs[i] : currentParagraphs[i];
 
+      console.log(`\n--- Paragraph ${i + 1} ---`);
+      console.log(`FI (${front.length} chars): ${front.substring(0, 120)}${front.length > 120 ? '...' : ''}`);
+      console.log(`EN (${back.length} chars): ${back.substring(0, 120)}${back.length > 120 ? '...' : ''}`);
+
+      // Check for length ratio anomalies (translations should be roughly similar length)
+      const lengthRatio = Math.max(front.length, back.length) / Math.max(Math.min(front.length, back.length), 1);
+      if (lengthRatio > 3) {
+        console.warn(`⚠️  WARNING: Length ratio ${lengthRatio.toFixed(2)} - possible misalignment`);
+      }
+
       if (front && back) {
+        console.log(`  ✅ Card ${cards.length + 1} created`);
         cards.push({
           front,
           back,
@@ -463,8 +482,31 @@ class AnkiGenerator {
             paragraphNumber: i + 1
           }
         });
+      } else {
+        console.warn(`  ⚠️  SKIPPED: Empty content (front: ${!!front}, back: ${!!back})`);
+        skippedParagraphs++;
       }
     }
+
+    // Log unpaired paragraphs
+    if (currentParagraphs.length !== translationParagraphs.length) {
+      const extraLang = currentParagraphs.length > translationParagraphs.length ? this.currentLang : this.otherLang;
+      const extraCount = Math.abs(currentParagraphs.length - translationParagraphs.length);
+      console.warn(`\n⚠️  ${extraCount} paragraph(s) in ${extraLang} have no pair and were not included`);
+    }
+
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('📊 GENERATION SUMMARY');
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log(`✅ Total cards generated: ${cards.length}`);
+    console.log(`📝 Paragraphs processed: ${maxParagraphs}`);
+    if (skippedParagraphs > 0) {
+      console.log(`⚠️  Paragraphs skipped due to empty content: ${skippedParagraphs}`);
+    }
+    if (currentParagraphs.length !== translationParagraphs.length) {
+      console.log(`⚠️  Unpaired paragraphs: ${Math.abs(currentParagraphs.length - translationParagraphs.length)}`);
+    }
+    console.log('═══════════════════════════════════════════════════════════\n');
 
     return cards;
   }
@@ -479,30 +521,99 @@ class AnkiGenerator {
     const currentSections = this.splitIntoSections(currentArticle);
     const translationSections = this.splitIntoSections(translationArticle);
 
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('🎴 ANKI SECTION CARD GENERATION - DETAILED LOG');
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log(`Found ${currentSections.length} sections in ${this.currentLang}, ${translationSections.length} in ${this.otherLang}`);
+
+    // Log all section headings for comparison
+    console.log(`\n--- Section headings in ${this.currentLang} ---`);
+    currentSections.forEach((s, idx) => {
+      const heading = s.heading || '(no heading)';
+      console.log(`  [${idx + 1}] ${heading} (${s.content.length} paragraphs)`);
+    });
+    console.log(`\n--- Section headings in ${this.otherLang} ---`);
+    translationSections.forEach((s, idx) => {
+      const heading = s.heading || '(no heading)';
+      console.log(`  [${idx + 1}] ${heading} (${s.content.length} paragraphs)`);
+    });
+
+    // Warn if section counts are very different
+    const sectionRatio = Math.max(currentSections.length, translationSections.length) /
+                        Math.max(Math.min(currentSections.length, translationSections.length), 1);
+    if (sectionRatio > 1.5) {
+      console.warn(`⚠️  WARNING: Section count mismatch ratio ${sectionRatio.toFixed(2)}. This may indicate parsing issues or different article structures.`);
+    }
+
     const cards = [];
     const maxSections = Math.min(currentSections.length, translationSections.length);
+    let skippedSections = 0;
+
+    console.log(`\n--- Processing ${maxSections} section pairs ---`);
 
     for (let i = 0; i < maxSections; i++) {
       const currentContent = currentSections[i].content.join('\n\n');
       const translationContent = translationSections[i].content.join('\n\n');
+      const sectionHeading = currentSections[i].heading || '(no heading)';
+      const translationHeading = translationSections[i].heading || '(no heading)';
+
+      console.log(`\n--- Section ${i + 1}: "${sectionHeading}" / "${translationHeading}" ---`);
+      console.log(`${this.currentLang}: ${currentSections[i].content.length} paragraphs, ${currentContent.length} chars`);
+      console.log(`${this.otherLang}: ${translationSections[i].content.length} paragraphs, ${translationContent.length} chars`);
+
+      // Log paragraph previews
+      if (currentSections[i].content.length > 0) {
+        console.log(`  ${this.currentLang} preview: ${currentContent.substring(0, 100)}${currentContent.length > 100 ? '...' : ''}`);
+      }
+      if (translationSections[i].content.length > 0) {
+        console.log(`  ${this.otherLang} preview: ${translationContent.substring(0, 100)}${translationContent.length > 100 ? '...' : ''}`);
+      }
+
+      // Check for paragraph count mismatches within sections
+      const paragraphRatio = Math.max(currentSections[i].content.length, translationSections[i].content.length) /
+                            Math.max(Math.min(currentSections[i].content.length, translationSections[i].content.length), 1);
+      if (paragraphRatio > 2) {
+        console.warn(`  ⚠️  WARNING: Paragraph count mismatch within section (${currentSections[i].content.length} vs ${translationSections[i].content.length})`);
+      }
 
       if (currentContent && translationContent) {
         const front = this.currentLang === 'fi' ? currentContent : translationContent;
         const back = this.currentLang === 'fi' ? translationContent : currentContent;
 
-        // Use the section heading from the current language
-        const sectionHeading = currentSections[i].heading;
-
+        console.log(`  ✅ Card ${cards.length + 1} created for section "${sectionHeading}"`);
         cards.push({
           front,
           back,
           context: {
-            section: sectionHeading,
+            section: currentSections[i].heading,
             sectionNumber: i + 1
           }
         });
+      } else {
+        console.warn(`  ⚠️  SKIPPED: Empty content in section "${sectionHeading}" (current: ${!!currentContent}, translation: ${!!translationContent})`);
+        skippedSections++;
       }
     }
+
+    // Log unpaired sections
+    if (currentSections.length !== translationSections.length) {
+      const extraLang = currentSections.length > translationSections.length ? this.currentLang : this.otherLang;
+      const extraCount = Math.abs(currentSections.length - translationSections.length);
+      console.warn(`\n⚠️  ${extraCount} section(s) in ${extraLang} have no pair and were not included`);
+    }
+
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('📊 GENERATION SUMMARY');
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log(`✅ Total cards generated: ${cards.length}`);
+    console.log(`📑 Sections processed: ${maxSections}`);
+    if (skippedSections > 0) {
+      console.log(`⚠️  Sections skipped due to empty content: ${skippedSections}`);
+    }
+    if (currentSections.length !== translationSections.length) {
+      console.log(`⚠️  Unpaired sections: ${Math.abs(currentSections.length - translationSections.length)}`);
+    }
+    console.log('═══════════════════════════════════════════════════════════\n');
 
     return cards;
   }
