@@ -3,6 +3,12 @@ languageCode = 'fi'
 title = "Andrew's Selkouutiset Archive"
 theme = 'selkoarchive'
 
+# content/ is the selkouutiset-scrape-cleaned repo, which carries the raw Yle
+# HTML scrape as a nested submodule. Without this, Hugo publishes every raw
+# capture as a page of its own under /selkouutiset-scrape/ -- the whole scrape,
+# Yle's markup and all, served a second time beside the cleaned pages.
+ignoreFiles = ['[\\/]content[\\/]selkouutiset-scrape[\\/]']
+
 DefaultContentLanguage = "fi"
 
 [languages]

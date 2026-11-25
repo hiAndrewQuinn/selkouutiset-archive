@@ -1,0 +1,37 @@
+{{- /*
+Which Yle edition a day's page holds.
+
+The archive keeps one page per calendar day, holding the newest edition Yle
+published on or before that day. On days Yle published nothing new (holidays,
+some weekends) the page repeats the previous edition. The upstream pipeline
+records the edition's own date, from Yle's schema.org datePublished, in an
+edition.json beside each day's Markdown.
+
+@context {page} . A day's page.
+@returns {dict} day (string, YYYY-MM-DD), edition (string, YYYY-MM-DD, or ""
+  when unknown), isRepeat (bool), editionPage (the page of the edition's own
+  day, or nil), isLost (bool: Yle published an edition this day but no copy
+  survives anywhere; the page holds the previous edition instead).
+
+@example: {{ $e := partial "edition.html" . }}
+*/}}
+{{- $info := dict "day" "" "edition" "" "isRepeat" false "editionPage" nil "isLost" false }}
+{{- with .File }}
+  {{- $day := replace (strings.TrimSuffix "/" (path.Clean .Dir)) "/" "-" }}
+  {{- $info = merge $info (dict "day" $day) }}
+  {{- with $.Resources.GetMatch "edition.json" }}
+    {{- $data := . | transform.Unmarshal }}
+    {{- $info = merge $info (dict "isLost" (eq $data.lost true)) }}
+    {{- with $data.edition }}
+      {{- $edition := . }}
+      {{- $isRepeat := lt $edition $day }}{{- /* ISO dates compare correctly as strings */}}
+      {{- $info = merge $info (dict "edition" $edition "isRepeat" $isRepeat) }}
+      {{- if $isRepeat }}
+        {{- with site.GetPage (printf "/%s" (replace $edition "-" "/")) }}
+          {{- $info = merge $info (dict "editionPage" .) }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- return $info }}

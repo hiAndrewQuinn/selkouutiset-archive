@@ -1,16 +1,54 @@
 {{ define "main" }}
   {{ .Content }}
 
-  {{ $pages := where site.RegularPages.Reverse "IsTranslated" true }}
-
-  {{ range $index, $page := $pages }}
-    {{ if eq $index 0 }}
-      <h1 class="latest-entry"><a href="{{ $page.RelPermalink }}">{{ $page.RelPermalink }} (latest)</a></h1>
-    {{ else if eq $index 1 }}
-      <h2><a href="{{ $page.RelPermalink }}">{{ $page.RelPermalink }}</a></h2>
-    {{ else }}
-      <h3><a href="{{ .RelPermalink }}">{{ .RelPermalink }}</a></h3>
+  {{- /* One entry per day, newest first. Every day has a Finnish page; the
+     English listing links a day's English page when it has one and otherwise
+     its Finnish page, marked "(no English translation)" (the 2016-2023
+     backfill is deliberately never machine-translated). Days whose edition is
+     lost are shown in grey without a link; days repeating an earlier edition
+     are dimmed with a note. Pages outside YYYY/MM/DD (the README) are left
+     out, as before. */}}
+  {{ $lang := .Language.Lang }}
+  {{ $days := slice }}
+  {{ range where (where site.AllPages "Kind" "page") "Language.Lang" "fi" }}
+    {{ $dir := "" }}
+    {{ with .File }}{{ $dir = .Dir }}{{ end }}
+    {{ if findRE `^\d{4}[\\/]\d{2}[\\/]\d{2}[\\/]?$` $dir }}
+      {{ $shown := . }}
+      {{ $untranslated := false }}
+      {{ if ne $lang "fi" }}
+        {{ $tr := where .Translations "Language.Lang" $lang }}
+        {{ if $tr }}{{ $shown = index $tr 0 }}{{ else }}{{ $untranslated = true }}{{ end }}
+      {{ end }}
+      {{ $days = $days | append (dict "key" $dir "fi" . "shown" $shown "untranslated" $untranslated) }}
     {{ end }}
+  {{ end }}
+
+  {{ range $index, $d := sort $days "key" "desc" }}
+    {{ $e := partial "edition.html" $d.fi }}
+    {{ $notes := slice }}
+    {{ $class := "" }}
+    {{ if $e.isLost }}
+      {{ $class = "lost" }}
+      {{ $notes = $notes | append "(lost media)" }}
+    {{ else }}
+      {{ if $e.isRepeat }}
+        {{ $class = "repeat" }}
+        {{ $on := (time.AsTime $e.edition).Format "2.1.2006" }}
+        {{ $notes = $notes | append (cond (eq $lang "fi") (printf "toisto: %s" $on) (printf "repeat of %s" $on)) }}
+      {{ end }}
+      {{ if $d.untranslated }}
+        {{ $notes = $notes | append "(no English translation)" }}
+      {{ end }}
+    {{ end }}
+    {{ $url := $d.shown.RelPermalink }}
+    {{ $label := cond (eq $index 0) (printf "%s (latest)" $url) $url }}
+    {{ $tag := cond (eq $index 0) "h1" (cond (eq $index 1) "h2" "h3") }}
+    {{ $first := cond (eq $index 0) "latest-entry" "" }}
+    {{ $body := cond $e.isLost (printf `<span class="lost-day">%s</span>` $label) (printf `<a href="%s">%s</a>` $url $label) }}
+    {{ $note := "" }}
+    {{ with $notes }}{{ $note = printf ` <span class="repeat-note">%s</span>` (delimit . " ") }}{{ end }}
+    {{ printf `<%s class="%s %s">%s%s</%s>` $tag $first $class $body $note $tag | safeHTML }}
   {{ end }}
 
 {{ end }}

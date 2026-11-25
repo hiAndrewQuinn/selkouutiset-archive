@@ -196,6 +196,30 @@ aside a {
   margin-right: 0.5em;
 }
 
+/* --- Repeat days (no new edition published that day) --- */
+aside.repeat-notice {
+  border-left-color: var(--bistre);
+  font-style: italic;
+}
+
+.repeat {
+  opacity: 0.55;
+}
+
+/* Lost days: the edition existed but no copy survives; listed, never linked. */
+.lost,
+.lost .lost-day {
+  color: gray;
+  font-weight: 300;
+}
+
+.repeat-note {
+  font-family: 'Lexend Deca', sans-serif;
+  font-size: 0.6em;
+  font-weight: 300;
+  color: gray;
+}
+
 /* --- Mobile Compacting Rules --- */
 @media screen and (max-width: 767px) {
   /* Reduce base font size slightly to fit more text */
