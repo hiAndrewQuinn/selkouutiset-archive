@@ -12,6 +12,7 @@
   <a href="#" onclick="generateAnkiCards('paragraph'); return false;" title="Generate flashcards for each paragraph">[paragraph]</a>
   <a href="#" onclick="generateAnkiCards('section'); return false;" title="Generate flashcards for each section">[section]</a>
   </aside>
+  {{ partial "repeat-notice.html" . }}
   <article class="prose">
     {{ .Content }}
   </article>
