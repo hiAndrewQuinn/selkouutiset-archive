@@ -3,7 +3,7 @@
 
   {{- /* One entry per day, newest first. Every day has a Finnish page; the
      English listing links a day's English page when it has one and otherwise
-     its Finnish page, marked "(no English translation)" (the 2016-2023
+     its Finnish page; both listings mark such days "(no English translation)" (the 2016-2023
      backfill is deliberately never machine-translated). Days whose edition is
      lost are shown in grey without a link; days repeating an earlier edition
      are dimmed with a note. Pages outside YYYY/MM/DD (the README) are left
@@ -15,10 +15,13 @@
     {{ with .File }}{{ $dir = .Dir }}{{ end }}
     {{ if findRE `^\d{4}[\\/]\d{2}[\\/]\d{2}[\\/]?$` $dir }}
       {{ $shown := . }}
-      {{ $untranslated := false }}
+      {{- /* Both listings mark days without an English page: the Finnish
+         (root) listing is the site's front page, and readers there use the
+         English translations too. */}}
+      {{ $untranslated := not (where .Translations "Language.Lang" "en") }}
       {{ if ne $lang "fi" }}
         {{ $tr := where .Translations "Language.Lang" $lang }}
-        {{ if $tr }}{{ $shown = index $tr 0 }}{{ else }}{{ $untranslated = true }}{{ end }}
+        {{ with $tr }}{{ $shown = index . 0 }}{{ end }}
       {{ end }}
       {{ $days = $days | append (dict "key" $dir "fi" . "shown" $shown "untranslated" $untranslated) }}
     {{ end }}
