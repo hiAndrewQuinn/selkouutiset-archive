@@ -1,0 +1,280 @@
+/*
+ * Theme Name: Selko Archive (Fused)
+ * Description: A classless CSS stylesheet for the Selkouutiset Archive,
+ * merging a minimal layout with a more advanced base theme.
+ */
+
+/* --- Root Variables & Color Palette --- */
+:root {
+  /* Color Palette */
+  --copper: #a8763eff;
+  --cosmic-latte: #f7f3e3ff;
+  --antiflash-white: #ecf0f1ff;
+  --specsavers-green: #0a6640ff;
+  --barn-red: #6f1a07ff;
+  --bistre: #2b2118ff;
+
+  /* Base sizes for mobile */
+  --base-font-size: 18px;
+  --h1-font-size: 2em;
+  --h2-font-size: 1.5em;
+  --h3-font-size: 1.2em;
+  --code-font-size: 0.9em;
+  --body-margin: 0;
+  --body-padding: 0 1em;
+  --max-width: 100%;
+}
+
+/* --- Media query for larger screens --- */
+@media screen and (min-width: 768px) {
+  :root {
+    --base-font-size: 18px;
+    --h1-font-size: 2.2em;
+    --h2-font-size: 1.6em;
+    --h3-font-size: 1.3em;
+    --code-font-size: 1em;
+    --body-margin: 0 auto;
+    --max-width: 50em; /* Key rule from the original Selko Archive CSS */
+  }
+}
+
+/* --- General Page Structure --- */
+html {
+  background-color: var(--cosmic-latte);
+  color: var(--bistre);
+  font-family: 'Lexend Deca', sans-serif;
+  margin: 1em 0;
+  font-size: var(--base-font-size);
+}
+
+body {
+  margin: var(--body-margin);
+  max-width: var(--max-width);
+  padding: var(--body-padding);
+}
+
+/* --- Header & Footer --- */
+header, footer {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+header {
+  border-bottom: 1px solid var(--bistre);
+}
+
+footer {
+  border-top: 1px solid var(--bistre);
+}
+
+/* --- Typography --- */
+h1, h2, h3 {
+  font-family: "Atkinson Hyperlegible", sans-serif;
+  line-height: 1.2;
+}
+
+h1 {
+  color: var(--barn-red);
+  font-size: var(--h1-font-size);
+  font-weight: 700;
+  margin: 0.5em 0 0.5em;
+}
+
+h2 {
+  color: var(--copper);
+  font-size: var(--h2-font-size);
+  font-weight: 700;
+  margin: 0.8em 0 0.4em;
+}
+
+h3 {
+  color: var(--bistre);
+  font-size: var(--h3-font-size);
+  margin: 0.6em 0 0.3em;
+}
+
+p, ul, ol, li {
+  line-height: 1.6;
+}
+
+a {
+  color: var(--copper);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  font-weight: bold;
+}
+
+a:hover, a:focus {
+  background-color: #fff2a8; /* A lighter yellow for hover */
+  color: var(--bistre);
+}
+
+/* --- Content Elements --- */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5em;
+  border: 0.1em solid var(--bistre);
+  display: block;
+  margin: 1em 0;
+}
+
+blockquote {
+  font-style: italic;
+  border-left: 0.25em solid var(--copper);
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  font-size: 95%;
+  background-color: var(--antiflash-white);
+}
+
+/* --- Code Blocks --- */
+code, pre {
+  margin: 1em 0;
+  font-family: 'Fira Code', monospace;
+  background-color: var(--antiflash-white);
+  color: var(--specsavers-green);
+  font-size: var(--code-font-size);
+  overflow-x: auto;
+  padding: 0.5em;
+  border-radius: 0.3em;
+}
+
+/* Inline code styling */
+p > code, li > code {
+  padding: 0.1em 0.3em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* --- Tables --- */
+table {
+  margin: 1.5em auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  color: var(--barn-red);
+  font-size: 0.95em;
+  border-bottom: 2px solid var(--bistre);
+}
+
+tbody {
+  font-size: 0.9em;
+}
+
+th, td {
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: var(--antiflash-white);
+}
+
+tbody tr:hover {
+  background-color: #fff2a8; /* Lighter yellow for hover */
+}
+
+tbody td:hover {
+  color: var(--specsavers-green);
+}
+
+/* --- Aside Styling (Language & Anki Links) --- */
+aside {
+  margin: 1em 0;
+  padding: 0.75em;
+  background-color: var(--antiflash-white);
+  border-left: 3px solid var(--copper);
+  font-size: 0.9em;
+}
+
+aside a {
+  margin-right: 0.5em;
+}
+
+/* --- Repeat days (no new edition published that day) --- */
+aside.repeat-notice {
+  border-left-color: var(--bistre);
+  font-style: italic;
+}
+
+.repeat {
+  opacity: 0.55;
+}
+
+/* Lost days: the edition existed but no copy survives; listed, never linked. */
+.lost,
+.lost .lost-day {
+  color: gray;
+  font-weight: 300;
+}
+
+.repeat-note {
+  font-family: 'Lexend Deca', sans-serif;
+  font-size: 0.6em;
+  font-weight: 300;
+  color: gray;
+}
+
+/* --- Mobile Compacting Rules --- */
+@media screen and (max-width: 767px) {
+  /* Reduce base font size slightly to fit more text */
+  :root {
+    --base-font-size: 14px;
+    --h1-font-size: 1.5em;
+    --h2-font-size: 1.25em;
+    --h3-font-size: 1.125em;
+    hyphens: auto;
+
+    /* Fallbacks for older browsers if needed */
+    -webkit-hyphens: auto; /* Safari */
+    -ms-hyphens: auto;     /* Internet Explorer */
+  }
+
+  /* Reduce overall page margin */
+  html {
+    margin: 0.25em 0;
+  }
+
+  /* Reduce margins on headers and footers */
+  header, footer {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    padding-top: 0.125em;
+    padding-bottom: 0.125em;
+  }
+  
+  /* Tighter line-height for body text is the biggest factor */
+  p, ul, ol, li {
+    line-height: 1.2;
+  }
+
+  /* Tighter line-height and margins for headings */
+  h1, h2, h3 { line-height: 1.05; }
+  h1 { margin: 0.5em 0; }
+  h2 { margin: 0.3em 0 0.3em; }
+  h3 { margin: 0.2em 0 0.2em; }
+
+  /* Reduce space around other elements */
+  img, blockquote, code, pre {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+  }
+  
+  blockquote {
+    padding: 0.25em 0.75em;
+  }
+
+  table {
+    margin: 1em auto;
+  }
+
+  th, td {
+    padding: 0.4em 0.5em;
+  }
+}
+

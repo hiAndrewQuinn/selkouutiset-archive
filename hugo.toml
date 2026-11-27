@@ -1,0 +1,29 @@
+baseURL = 'https://example.org/'
+languageCode = 'fi'
+title = "Andrew's Selkouutiset Archive"
+theme = 'selkoarchive'
+
+# content/ is the selkouutiset-scrape-cleaned repo, which carries the raw Yle
+# HTML scrape as a nested submodule. Without this, Hugo publishes every raw
+# capture as a page of its own under /selkouutiset-scrape/ -- the whole scrape,
+# Yle's markup and all, served a second time beside the cleaned pages.
+ignoreFiles = ['[\\/]content[\\/]selkouutiset-scrape[\\/]',
+               # the cleaned repo's tooling, which is not site content
+               '[\\/]content[\\/](lib|tests|tools)[\\/]', '[\\/]content[\\/][^\\/]+[.]sh$']
+
+DefaultContentLanguage = "fi"
+
+[languages]
+  [languages.fi]
+    title = "Andrew's Selkouutiset Archive"
+    weight = 1
+  [languages.en]
+    title = "Andrew's Selkouutiset Archive"
+    weight = 2
+
+[params]
+  # The home page lists every day from here on. The earliest Selkouutiset
+  # broadcast Yle documents (as "Special Finnish", on Radio Finland) is
+  # 3.10.1992; the programme began that autumn. Days with no page are shown as
+  # lost media.
+  firstBroadcast = "1992-10-03"

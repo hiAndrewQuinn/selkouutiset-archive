@@ -1,0 +1,27 @@
+{{- /*
+Banner for a day whose page repeats an earlier edition, either because Yle
+published nothing new or because that day's edition is lost. Renders nothing on a
+day that has its own edition.
+
+@context {page} . A day's page.
+*/}}
+{{- $e := partial "edition.html" . }}
+{{- if $e.isRepeat }}
+  {{- $date := time.AsTime $e.edition }}
+  {{- $shown := $date.Format "2.1.2006" }}
+  {{- $link := $shown }}
+  {{- with $e.editionPage }}
+    {{- $link = printf `<a href="%s">%s</a>` .RelPermalink $shown }}
+  {{- end }}
+  <aside class="repeat-notice" role="note">
+  {{- if and $e.isLost (eq .Language.Lang "fi") }}
+    Tämän päivän selkouutiset ovat kadonneet: niistä ei ole säilynyt kopiota. Alla ovat uutiset päivältä {{ $link | safeHTML }}.
+  {{- else if $e.isLost }}
+    This day's edition is lost: no copy of it survives. Below is the edition of {{ $link | safeHTML }}.
+  {{- else if eq .Language.Lang "fi" }}
+    Yle ei julkaissut tänä päivänä uusia selkouutisia. Alla ovat uutiset päivältä {{ $link | safeHTML }}.
+  {{- else }}
+    Yle published no new edition on this day. Below is the edition of {{ $link | safeHTML }}.
+  {{- end }}
+  </aside>
+{{- end }}
