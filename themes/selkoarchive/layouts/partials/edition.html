@@ -11,11 +11,13 @@ edition.json beside each day's Markdown.
 @returns {dict} day (string, YYYY-MM-DD), edition (string, YYYY-MM-DD, or ""
   when unknown), isRepeat (bool), editionPage (the page of the edition's own
   day, or nil), isLost (bool: Yle published an edition this day but no copy
-  survives anywhere; the page holds the previous edition instead).
+  survives anywhere; the page holds the previous edition instead),
+  isHeadlinesOnly (bool: a TV edition whose page on yle.fi carries only the
+  headlines, the article text having been lost; see below).
 
 @example: {{ $e := partial "edition.html" . }}
 */}}
-{{- $info := dict "day" "" "edition" "" "isRepeat" false "editionPage" nil "isLost" false }}
+{{- $info := dict "day" "" "edition" "" "isRepeat" false "editionPage" nil "isLost" false "isHeadlinesOnly" false }}
 {{- with .File }}
   {{- $day := replace (strings.TrimSuffix "/" (path.Clean .Dir)) "/" "-" }}
   {{- $info = merge $info (dict "day" $day) }}
@@ -34,4 +36,11 @@ edition.json beside each day's Markdown.
     {{- end }}
   {{- end }}
 {{- end }}
+{{- /* Headline-only TV editions. For some 2016-2023 TV editions yle.fi now
+     serves only the list of headlines; the article text is gone. Such a page
+     is a TV edition (its heading says "(tv)" or starts with "TV") with well
+     under 150 words. Every real edition has more: across the archive, these
+     stubs run 5-115 words and complete TV editions 175 and up. */}}
+{{- $tv := findRE `(?mi)^#[ \t]+(TV\b.*|.*\(tv\)[ \t]*)$` .RawContent 1 }}
+{{- $info = merge $info (dict "isHeadlinesOnly" (and (gt (len $tv) 0) (lt .WordCount 150))) }}
 {{- return $info }}

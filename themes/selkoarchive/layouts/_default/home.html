@@ -10,8 +10,10 @@
      machine-translated). Days repeating an earlier edition are dimmed with a
      note. Lost days are shown in grey as "(lost media)" without a link: days
      the archive marks lost in edition.json, and every day since the first
-     broadcast that has no page at all. Pages outside YYYY/MM/DD (the README)
-     are left out. */}}
+     broadcast that has no page at all. Days whose edition survives only as a
+     list of headlines (see partials/edition.html) stay linked, noted "(partially
+     lost media - headlines only)". Pages outside YYYY/MM/DD (the README) are
+     left out. */}}
   {{- $lang := .Language.Lang }}
   {{- $home := .RelPermalink }}{{/* "/" or "/en/": prefix for days without a page */}}
   {{- $scratch := newScratch }}
@@ -61,6 +63,9 @@
           {{- $class = "repeat" }}
           {{- $on := (time.AsTime $e.edition).Format "2.1.2006" }}
           {{- $notes = $notes | append (cond (eq $lang "fi") (printf "toisto: %s" $on) (printf "repeat of %s" $on)) }}
+        {{- end }}
+        {{- if $e.isHeadlinesOnly }}
+          {{- $notes = $notes | append "(partially lost media - headlines only)" }}
         {{- end }}
         {{- if .untranslated }}
           {{- $notes = $notes | append "(no English translation)" }}
