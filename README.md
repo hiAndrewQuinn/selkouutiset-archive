@@ -45,6 +45,10 @@ The home pages list **every day since Selkouutiset began**, on 3.10.1992 (the ea
 
 The `content` submodule carries the raw Yle HTML scrape as a nested submodule (`content/selkouutiset-scrape/`). `hugo.toml` excludes it with `ignoreFiles`, so only the cleaned pages are published.
 
+### 🔄 How the live site is kept current
+
+A Raspberry Pi runs [`scripts/update.sh`](scripts/update.sh) hourly. It moves the `content` submodule to the newest cleaned commit and pushes, and GitHub Actions then builds and deploys the site. The script takes a lock, checks free space (the Pi's filesystem is RAM), syncs with GitHub before it works and again before it pushes ([`lib/git-sync.sh`](lib/git-sync.sh)), and runs every network call under a timeout. The library is shared, identically, with `process.sh` in selkouutiset-scrape-cleaned, whose [BOX.md](https://github.com/hiAndrewQuinn/selkouutiset-scrape-cleaned/blob/master/BOX.md) documents both scripts, the locks and the crontab.
+
 ### 🎴 Anki Flashcard Generation
 
 The archive now includes built-in Anki flashcard generation! Create bilingual flashcards directly from any article to enhance your Finnish language learning.
