@@ -1,18 +1,12 @@
-# git-sync.sh: keep a checkout on the box in step with GitHub.
+# git-sync.sh: keep an automated checkout in step with its remote.
 #
 # Sourced (never run) by process.sh here and by update.sh in
 # selkouutiset-archive; the two copies are identical, keep them so.
 #
-# Why: the box only ever pushed. A PR merged on GitHub left it behind, its next
-# push was rejected, and every hourly run after that failed the same way until
-# someone reconciled it by hand. The scripts now sync before they work and
-# again before they push, under their own lock.
-#
-# Written for the box: piCore (Tiny Core) on a 4 GB Raspberry Pi, BusyBox ash,
-# and a root filesystem (home included) that is a tmpfs, i.e. RAM. So: POSIX
-# sh only, every network call under `timeout`, git told to pack in little
-# memory, and a free-space check before anything writes, because a full tmpfs
-# means a machine out of memory, not just a failed write.
+# The scripts sync before they work and again before they push, under their
+# own lock, so a PR merged on GitHub mid-run never leaves a push rejected.
+# POSIX sh only; every network call runs under `timeout`; git packs in little
+# memory; and nothing starts without a minimum of free space.
 #
 # The caller defines log_message and sets GIT_REMOTE and GIT_BRANCH. Functions
 # return non-zero on failure and never exit; the caller decides. They check
@@ -24,10 +18,10 @@
 : "${GIT_RETRY_SLEEP:=30}"    # seconds before retry n is n * this
 : "${MIN_FREE_MB:=100}"       # refuse to start below this much free space
 
-# Never prompt (cron has no terminal; a prompt would hang until the timeout).
+# Never prompt (an unattended run has no terminal).
 export GIT_TERMINAL_PROMPT=0
 # Pack with one thread and a small window, so a repack (git gc --auto after a
-# large commit) cannot balloon in RAM; and run gc in the foreground, inside the
+# large commit) stays small in memory; and run gc in the foreground, inside the
 # lock, instead of detached where it would race the next run.
 export GIT_CONFIG_COUNT=3
 export GIT_CONFIG_KEY_0=pack.threads GIT_CONFIG_VALUE_0=1
@@ -61,7 +55,7 @@ check_free_space() {
     ;;
   esac
   if [ $((_kb / 1024)) -lt "$MIN_FREE_MB" ]; then
-    log_message "CRITICAL ERROR: only $((_kb / 1024)) MB free here (need $MIN_FREE_MB MB). On this box the filesystem is RAM; refusing to run."
+    log_message "CRITICAL ERROR: only $((_kb / 1024)) MB free here (need $MIN_FREE_MB MB); refusing to run."
     return 1
   fi
   log_message "Free space: $((_kb / 1024)) MB (minimum $MIN_FREE_MB MB)."

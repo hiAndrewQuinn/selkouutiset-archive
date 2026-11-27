@@ -1,24 +1,20 @@
 #!/bin/sh
 # update.sh: point the site at the newest cleaned content, and push.
 #
-# Runs on the box from cron (hourly, at :35, after process.sh at :50 of the
-# hour before has pushed new content to selkouutiset-scrape-cleaned):
-#
-#   35 * * * * /home/tc/selkouutiset-archive/scripts/update.sh >> /home/tc/selkouutiset-archive/activity.log 2>&1
-#
-# Steps, each of which stops the run cleanly if it fails:
+# Run periodically (after process.sh in selkouutiset-scrape-cleaned has pushed
+# new content). Steps, each of which stops the run cleanly if it fails:
 #   1. one run at a time (flock);
-#   2. enough free space (the box's filesystem is RAM);
+#   2. enough free space;
 #   3. take in whatever GitHub's main has that this checkout lacks, e.g. a
 #      merged PR, so the push below is not rejected (lib/git-sync.sh);
 #   4. move the `content` submodule to the newest commit of its branch
-#      (not recursive: content's own nested scrape submodule, ~750 MB, is never
+#      (not recursive: content's own nested scrape submodule is never
 #      checked out here);
 #   5. if that moved the pointer, commit it and push (re-syncing and retrying
 #      if GitHub moved meanwhile). GitHub Actions then builds and deploys.
 #
 # Safe to run by hand at any time, any number of times: with nothing new it
-# changes nothing. POSIX sh, for BusyBox ash on piCore.
+# changes nothing. POSIX sh.
 
 set -u
 
@@ -28,7 +24,7 @@ GIT_REMOTE="${GIT_REMOTE:-origin}"
 GIT_BRANCH="${GIT_BRANCH:-main}"
 LOCK_FILE="${TMPDIR:-/tmp}/selkouutiset-archive-update.lock"
 SCRIPT_NAME=$(basename "$0")
-HOSTNAME=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo box)
+HOSTNAME=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo localhost)
 
 log_message() {
   _ts=$(date '+%b %d %H:%M:%S')

@@ -47,7 +47,7 @@ The `content` submodule carries the raw Yle HTML scrape as a nested submodule (`
 
 ### 🔄 How the live site is kept current
 
-A Raspberry Pi runs [`scripts/update.sh`](scripts/update.sh) hourly. It moves the `content` submodule to the newest cleaned commit and pushes, and GitHub Actions then builds and deploys the site. The script takes a lock, checks free space (the Pi's filesystem is RAM), syncs with GitHub before it works and again before it pushes ([`lib/git-sync.sh`](lib/git-sync.sh)), and runs every network call under a timeout. The library is shared, identically, with `process.sh` in selkouutiset-scrape-cleaned, whose [BOX.md](https://github.com/hiAndrewQuinn/selkouutiset-scrape-cleaned/blob/master/BOX.md) documents both scripts, the locks and the crontab.
+[`scripts/update.sh`](scripts/update.sh) runs periodically: it moves the `content` submodule to the newest cleaned commit and pushes, and GitHub Actions then builds and deploys the site. It takes a lock, checks free space, syncs with GitHub before it works and again before it pushes ([`lib/git-sync.sh`](lib/git-sync.sh), shared with selkouutiset-scrape-cleaned), and runs every network call under a timeout.
 
 ### 🎴 Anki Flashcard Generation
 
