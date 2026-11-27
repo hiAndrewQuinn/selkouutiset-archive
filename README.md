@@ -43,6 +43,8 @@ Some days are **lost media**: Yle published an edition, but no copy survives any
 
 The home pages list **every day since Selkouutiset began**, on 3.10.1992 (the earliest broadcast Yle documents, as *Special Finnish* on Radio Finland; set as `firstBroadcast` in `hugo.toml`), not just the days the archive holds. Days with no page at all, which is most of 1992–2016, are listed the same way as lost days: grey, unlinked, *(lost media)*. When a copy of one turns up and is filed, it simply becomes a link.
 
+Some days are **partially lost**: for 103 TV editions from 2016–2023, yle.fi now serves only the list of headlines, and the article text is gone. Their pages hold what survives, and the home pages keep them linked with a grey *(partially lost media - headlines only)* note. They are recognised from the page itself (`partials/edition.html`): a TV edition whose Finnish text is under 150 words, where every complete edition has 175 or more.
+
 The `content` submodule carries the raw Yle HTML scrape as a nested submodule (`content/selkouutiset-scrape/`). `hugo.toml` excludes it with `ignoreFiles`, so only the cleaned pages are published.
 
 ### 🔄 How the live site is kept current
