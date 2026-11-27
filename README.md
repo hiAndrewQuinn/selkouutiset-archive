@@ -41,6 +41,8 @@ Days before 2023-10-26 (the historical backfill, back to September 2016) are rec
 
 Some days are **lost media**: Yle published an edition, but no copy survives anywhere (not on yle.fi, the Wayback Machine, or this archive). Both home pages list them in grey, without a link, as *(lost media)*; their page (still reachable by URL) holds the previous edition under a note saying so. The list of lost days, with the reason for each, is `lost.txt` in [selkouutiset-scrape](https://github.com/hiAndrewQuinn/selkouutiset-scrape); `edition.json` carries it as `"lost": true`.
 
+The home pages list **every day since Selkouutiset began**, on 3.10.1992 (the earliest broadcast Yle documents, as *Special Finnish* on Radio Finland; set as `firstBroadcast` in `hugo.toml`), not just the days the archive holds. Days with no page at all, which is most of 1992–2016, are listed the same way as lost days: grey, unlinked, *(lost media)*. When a copy of one turns up and is filed, it simply becomes a link.
+
 The `content` submodule carries the raw Yle HTML scrape as a nested submodule (`content/selkouutiset-scrape/`). `hugo.toml` excludes it with `ignoreFiles`, so only the cleaned pages are published.
 
 ### 🎴 Anki Flashcard Generation

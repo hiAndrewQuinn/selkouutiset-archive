@@ -1,57 +1,87 @@
 {{ define "main" }}
   {{ .Content }}
 
-  {{- /* One entry per day, newest first. Every day has a Finnish page; the
-     English listing links a day's English page when it has one and otherwise
-     its Finnish page; both listings mark such days "(no English translation)" (the 2016-2023
-     backfill is deliberately never machine-translated). Days whose edition is
-     lost are shown in grey without a link; days repeating an earlier edition
-     are dimmed with a note. Pages outside YYYY/MM/DD (the README) are left
-     out, as before. */}}
+  {{- /* One entry per calendar day, newest first, from the first Selkouutiset
+     broadcast (site.Params.firstBroadcast) to the newest day in the archive.
+
+     Every archived day has a Finnish page; the English listing links a day's
+     English page when it has one and otherwise its Finnish page, marked "(no
+     English translation)" (the pre-2023 backfill is deliberately never
+     machine-translated). Days repeating an earlier edition are dimmed with a
+     note. Lost days are shown in grey as "(lost media)" without a link: days
+     the archive marks lost in edition.json, and every day since the first
+     broadcast that has no page at all. Pages outside YYYY/MM/DD (the README)
+     are left out. */}}
   {{ $lang := .Language.Lang }}
-  {{ $days := slice }}
+  {{ $home := .RelPermalink }}{{/* "/" or "/en/": prefix for days without a page */}}
+  {{ $scratch := newScratch }}
+  {{ $scratch.Set "last" "" }}{{/* newest YYYY-MM-DD with a page; ISO dates compare as strings */}}
   {{ range where (where site.AllPages "Kind" "page") "Language.Lang" "fi" }}
+    {{ $page := . }}
     {{ $dir := "" }}
     {{ with .File }}{{ $dir = .Dir }}{{ end }}
-    {{ if findRE `^\d{4}[\\/]\d{2}[\\/]\d{2}[\\/]?$` $dir }}
-      {{ $shown := . }}
-      {{- /* Both listings mark days without an English page: the Finnish
-         (root) listing is the site's front page, and readers there use the
-         English translations too. */}}
-      {{ $untranslated := not (where .Translations "Language.Lang" "en") }}
+    {{ with findRESubmatch `^(\d{4})[\\/](\d{2})[\\/](\d{2})[\\/]?$` $dir 1 }}
+      {{ $m := index . 0 }}
+      {{ $shown := $page }}
+      {{ $untranslated := false }}
       {{ if ne $lang "fi" }}
-        {{ $tr := where .Translations "Language.Lang" $lang }}
-        {{ with $tr }}{{ $shown = index . 0 }}{{ end }}
+        {{ $tr := where $page.Translations "Language.Lang" $lang }}
+        {{ if $tr }}{{ $shown = index $tr 0 }}{{ else }}{{ $untranslated = true }}{{ end }}
       {{ end }}
-      {{ $days = $days | append (dict "key" $dir "fi" . "shown" $shown "untranslated" $untranslated) }}
+      {{ $key := printf "%s-%s-%s" (index $m 1) (index $m 2) (index $m 3) }}
+      {{ $scratch.SetInMap "days" $key (dict "fi" $page "shown" $shown "untranslated" $untranslated) }}
+      {{ if gt $key ($scratch.Get "last") }}{{ $scratch.Set "last" $key }}{{ end }}
     {{ end }}
   {{ end }}
 
-  {{ range $index, $d := sort $days "key" "desc" }}
-    {{ $e := partial "edition.html" $d.fi }}
+  {{ $days := $scratch.Get "days" }}
+  {{ $start := time.AsTime site.Params.firstBroadcast }}
+  {{ $last := $scratch.Get "last" }}
+  {{ $span := div (sub (time.AsTime $last).Unix $start.Unix) 86400 }}
+
+  {{- /* seq is capped at 2000 items, so walk the days in blocks of 1000. The
+     offset counts days from $start; the newest day is $span. */}}
+  {{ range $block := seq (div $span 1000) -1 0 }}
+  {{ range $j := seq 999 -1 0 }}
+    {{ $offset := add (mul $block 1000) $j }}
+    {{ if le $offset $span }}
+    {{ $index := sub $span $offset }}
+    {{ $day := $start.AddDate 0 0 (int $offset) }}
+    {{ $d := index $days ($day.Format "2006-01-02") }}
     {{ $notes := slice }}
     {{ $class := "" }}
-    {{ if $e.isLost }}
+    {{ $url := "" }}
+    {{ $lost := true }}
+    {{ with $d }}
+      {{ $e := partial "edition.html" .fi }}
+      {{ $url = .shown.RelPermalink }}
+      {{ $lost = $e.isLost }}
+      {{ if not $lost }}
+        {{ if $e.isRepeat }}
+          {{ $class = "repeat" }}
+          {{ $on := (time.AsTime $e.edition).Format "2.1.2006" }}
+          {{ $notes = $notes | append (cond (eq $lang "fi") (printf "toisto: %s" $on) (printf "repeat of %s" $on)) }}
+        {{ end }}
+        {{ if .untranslated }}
+          {{ $notes = $notes | append "(no English translation)" }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ $url = printf "%s%s/" $home ($day.Format "2006/01/02") }}
+    {{ end }}
+    {{ if $lost }}
       {{ $class = "lost" }}
       {{ $notes = $notes | append "(lost media)" }}
-    {{ else }}
-      {{ if $e.isRepeat }}
-        {{ $class = "repeat" }}
-        {{ $on := (time.AsTime $e.edition).Format "2.1.2006" }}
-        {{ $notes = $notes | append (cond (eq $lang "fi") (printf "toisto: %s" $on) (printf "repeat of %s" $on)) }}
-      {{ end }}
-      {{ if $d.untranslated }}
-        {{ $notes = $notes | append "(no English translation)" }}
-      {{ end }}
     {{ end }}
-    {{ $url := $d.shown.RelPermalink }}
     {{ $label := cond (eq $index 0) (printf "%s (latest)" $url) $url }}
     {{ $tag := cond (eq $index 0) "h1" (cond (eq $index 1) "h2" "h3") }}
     {{ $first := cond (eq $index 0) "latest-entry" "" }}
-    {{ $body := cond $e.isLost (printf `<span class="lost-day">%s</span>` $label) (printf `<a href="%s">%s</a>` $url $label) }}
+    {{ $body := cond $lost (printf `<span class="lost-day">%s</span>` $label) (printf `<a href="%s">%s</a>` $url $label) }}
     {{ $note := "" }}
     {{ with $notes }}{{ $note = printf ` <span class="repeat-note">%s</span>` (delimit . " ") }}{{ end }}
     {{ printf `<%s class="%s %s">%s%s</%s>` $tag $first $class $body $note $tag | safeHTML }}
+    {{ end }}
+  {{ end }}
   {{ end }}
 
 {{ end }}

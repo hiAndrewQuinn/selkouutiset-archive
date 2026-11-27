@@ -18,3 +18,10 @@ DefaultContentLanguage = "fi"
   [languages.en]
     title = "Andrew's Selkouutiset Archive"
     weight = 2
+
+[params]
+  # The home page lists every day from here on. The earliest Selkouutiset
+  # broadcast Yle documents (as "Special Finnish", on Radio Finland) is
+  # 3.10.1992; the programme began that autumn. Days with no page are shown as
+  # lost media.
+  firstBroadcast = "1992-10-03"
