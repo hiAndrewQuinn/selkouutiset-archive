@@ -45,6 +45,8 @@ The home pages list **every day since Selkouutiset began**, on 3.10.1992 (the ea
 
 Some days are **partially lost**: for 103 TV editions from 2016–2023, yle.fi now serves only the list of headlines, and the article text is gone. Their pages hold what survives, and the home pages keep them linked with a grey *(partially lost media - headlines only)* note. They are recognised from the page itself (`partials/edition.html`): a TV edition whose Finnish text is under 150 words, where every complete edition has 175 or more.
 
+**Photo captions** are set small, grey and italic under their photo, with the leftover *Avaa kuvien katselu* ("Open image viewer") button label above them even smaller, so the eye can skip to the news text (`partials/photo-captions.html`). A paragraph counts as a caption when it follows that label and carries a photo credit (*Kuva:*, *Grafiikka:*, ...) in the Finnish page; checked against the `<figcaption>`s in Yle's original HTML, that marks every credited caption and never the article's own text (about 2% of captions have no credit and stay plain). English pages follow the Finnish page's decision, photo by photo.
+
 The `content` submodule carries the raw Yle HTML scrape as a nested submodule (`content/selkouutiset-scrape/`). `hugo.toml` excludes it with `ignoreFiles`, so only the cleaned pages are published.
 
 ### 🔄 How the live site is kept current

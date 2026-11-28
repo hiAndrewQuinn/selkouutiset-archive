@@ -278,3 +278,44 @@ aside.repeat-notice {
   }
 }
 
+
+/* --- Photo lines (see partials/photo-captions.html) ---
+   The leftover "Open image viewer" button label and the photo's caption are
+   context, not news text: set them small and muted, tucked under the photo,
+   so the eye can skip straight to the article. */
+:root {
+  --photo-note: #6b6156;   /* muted bistre; 5.6:1 on cosmic latte */
+}
+
+.photo-viewer-label {
+  margin: -0.6em 0 0.2em;
+  font-size: 0.7em;
+  letter-spacing: 0.03em;
+  color: var(--photo-note);
+  opacity: 0.75;
+}
+
+.photo-caption {
+  margin: 0.2em 0 1.4em;
+  padding-left: 0.75em;
+  border-left: 2px solid var(--copper);
+  font-size: 0.85em;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--photo-note);
+}
+
+@media screen and (max-width: 767px) {
+  .photo-viewer-label { margin-top: -0.45em; }
+  .photo-caption { margin-bottom: 1em; line-height: 1.25; }
+}
+
+/* A caption that Markdown took for a numbered list ("9. toukokuuta 1950 ..."):
+   show its number inline, as the text it is. */
+ol.photo-caption {
+  list-style-position: inside;
+}
+
+ol.photo-caption li {
+  margin: 0;
+}

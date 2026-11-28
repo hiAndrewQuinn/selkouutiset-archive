@@ -14,7 +14,7 @@
   </aside>
   {{ partial "repeat-notice.html" . }}
   <article class="prose">
-    {{ .Content }}
+    {{ partial "photo-captions.html" . }}
   </article>
   <script src="{{ "js/anki-generator.js" | relURL }}"></script>
 {{ end }}
