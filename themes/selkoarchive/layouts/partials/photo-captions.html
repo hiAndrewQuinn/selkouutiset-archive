@@ -1,0 +1,70 @@
+{{- /*
+A day's article HTML, with the lines that belong to its photos marked, so the
+stylesheet can set them apart and a reader's eye can skip them. They are context,
+not part of the news text (the read-aloud versions leave them out too).
+
+Under each photo Yle's page had a button, "Avaa kuvien katselu" ("Open image
+viewer"), and usually a caption ending in a photo credit:
+
+  ![Tyhjiä bussipysäkkejä.](https://img.img-cdn.yle.fi/...)
+
+  Avaa kuvien katselu
+
+  Helsingin Elielinaukiolla ei näkynyt monta bussia ... Kuva: Petteri Juuti / Yle
+
+The button line is always marked (class "photo-viewer-label"). The paragraph after
+it is marked as a caption (class "photo-caption") only when, in the Finnish page,
+it carries a credit ("Kuva:", "Grafiikka:", ...). Not every photo has a caption:
+after an uncaptioned one comes the article's own text, which must never be dimmed.
+Checked against the <figcaption>s of Yle's original HTML for 15,813 photos: every
+paragraph with a credit is a caption, and none of the 353 article paragraphs that
+follow an uncaptioned photo has one. (About 2% of real captions have no credit and
+stay unmarked.)
+
+The English page uses the Finnish page's decision for each photo in turn (the
+n-th "Open image viewer" is the n-th "Avaa kuvien katselu": the translation is
+line for line), so both languages mark the same paragraphs, and a credit that
+only the machine translation added (it happens) changes nothing. Image URLs are
+no use for this: the translation sometimes alters them. Should the counts ever
+differ, a page falls back to the credits in its own text.
+
+A caption that starts with a number and a full stop ("9. toukokuuta 1950 ...")
+is read by Markdown as a numbered list, so it is an <ol> rather than a <p>; it is
+marked all the same, and the stylesheet sets its number inline, as text.
+
+The paragraphs stay <p> elements and keep their text; only a class is added, so
+the Anki card generator, which reads paragraphs, sees the page as before.
+
+@context {page} . A day's page.
+@returns {template.HTML} .Content with the photo lines marked.
+
+@example: {{ partial "photo-captions.html" . }}
+*/}}
+{{- $html := string .Content }}
+{{- $fi := . }}
+{{- if ne .Language.Lang "fi" }}
+  {{- with where .Translations "Language.Lang" "fi" }}{{ $fi = index . 0 }}{{ end }}
+{{- end }}
+{{- $label := `<p class="photo-viewer-label">` }}
+{{- $html = replaceRE `<p>(Avaa kuvien katselu|Open image viewer)</p>` (printf "%s$1</p>" $label) $html }}
+{{- $credit := `\b(?:Kuva|Kuvat|Grafiikka|Kartta|Lähde|Photo|Photos|Picture|Image|Graphic|Graphics|Map|Source)\s*:` }}
+{{- $parts := split $html $label }}{{/* parts 1..n each start with label n's text */}}
+{{- /* One flag per photo: is the paragraph after its label a credited caption? */}}
+{{- $flags := slice }}
+{{- range findRESubmatch `(?m)^Avaa kuvien katselu[ \t]*$(?:\n\n([^\n]*))?` $fi.RawContent -1 }}
+  {{- $flags = $flags | append (findRE $credit (index . 1) 1 | len | lt 0) }}
+{{- end }}
+{{- if ne (len $flags) (sub (len $parts) 1) }}{{/* no usable Finnish page: this page's own credits */}}
+  {{- $flags = slice }}
+  {{- range after 1 $parts }}
+    {{- $flags = $flags | append (findRE (printf `^[^<]*</p>\s*<(?:p|ol)\b[^\n]*?%s` $credit) . 1 | len | lt 0) }}
+  {{- end }}
+{{- end }}
+{{- $out := index $parts 0 }}
+{{- range $i, $part := after 1 $parts }}
+  {{- if index $flags $i }}
+    {{- $part = replaceRE `^([^<]*</p>\s*)<(p|ol)\b` `${1}<$2 class="photo-caption"` $part 1 }}
+  {{- end }}
+  {{- $out = printf "%s%s%s" $out $label $part }}
+{{- end }}
+{{- return (safeHTML $out) }}
