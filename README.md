@@ -37,7 +37,7 @@ Every calendar day has a page. Each page holds the newest Selkouutiset edition Y
 
 The edition date comes from `edition.json` beside each day's Markdown in [selkouutiset-scrape-cleaned](https://github.com/hiAndrewQuinn/selkouutiset-scrape-cleaned), which records Yle's own `datePublished` for the page. Content without an `edition.json` simply shows no note.
 
-Days before 2023-10-26 (the historical backfill, back to September 2016) are recovered from yle.fi and kept **Finnish-only**, as are a few later days the scraper repaired after their translation was made. The English home page still lists them, linking the Finnish page with a grey *(no English translation)* note, and their pages offer only `[fi]`.
+Days before 2023-10-26 (the historical backfill, back to September 2016) are recovered from yle.fi and kept **Finnish-only**, as are a few later days the scraper repaired after their translation was made. The English home page still lists them, linking the Finnish page; both home pages mark them with a grey *(untranslated)* note, and their pages offer only `[fi]`.
 
 Some days are **lost media**: Yle published an edition, but no copy survives anywhere (not on yle.fi, the Wayback Machine, or this archive). Both home pages list them in grey, without a link, as *(lost media)*; their page (still reachable by URL) holds the previous edition under a note saying so. The list of lost days, with the reason for each, is `lost.txt` in [selkouutiset-scrape](https://github.com/hiAndrewQuinn/selkouutiset-scrape); `edition.json` carries it as `"lost": true`.
 
