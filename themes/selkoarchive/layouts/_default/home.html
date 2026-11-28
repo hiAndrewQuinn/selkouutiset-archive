@@ -5,9 +5,9 @@
      broadcast (site.Params.firstBroadcast) to the newest day in the archive.
 
      Every archived day has a Finnish page; the English listing links a day's
-     English page when it has one and otherwise its Finnish page, marked "(no
-     English translation)" (the pre-2023 backfill is deliberately never
-     machine-translated). Days repeating an earlier edition are dimmed with a
+     English page when it has one and otherwise its Finnish page. On both
+     listings a day with no English page is marked "(untranslated)" (the
+     pre-2023 backfill is deliberately never machine-translated). Days repeating an earlier edition are dimmed with a
      note. Lost days are shown in grey as "(lost media)" without a link: days
      the archive marks lost in edition.json, and every day since the first
      broadcast that has no page at all. Days whose edition survives only as a
@@ -25,10 +25,10 @@
     {{- with findRESubmatch `^(\d{4})[\\/](\d{2})[\\/](\d{2})[\\/]?$` $dir 1 }}
       {{- $m := index . 0 }}
       {{- $shown := $page }}
-      {{- $untranslated := false }}
+      {{- /* Untranslated: no English page, whichever listing this is. */}}
+      {{- $untranslated := not (where $page.Translations "Language.Lang" "en") }}
       {{- if ne $lang "fi" }}
-        {{- $tr := where $page.Translations "Language.Lang" $lang }}
-        {{- if $tr }}{{ $shown = index $tr 0 }}{{ else }}{{ $untranslated = true }}{{ end }}
+        {{- with where $page.Translations "Language.Lang" $lang }}{{ $shown = index . 0 }}{{ end }}
       {{- end }}
       {{- $key := printf "%s-%s-%s" (index $m 1) (index $m 2) (index $m 3) }}
       {{- $scratch.SetInMap "days" $key (dict "fi" $page "shown" $shown "untranslated" $untranslated) }}
@@ -68,7 +68,7 @@
           {{- $notes = $notes | append "(partially lost media - headlines only)" }}
         {{- end }}
         {{- if .untranslated }}
-          {{- $notes = $notes | append "(no English translation)" }}
+          {{- $notes = $notes | append "(untranslated)" }}
         {{- end }}
       {{- end }}
     {{- else }}
